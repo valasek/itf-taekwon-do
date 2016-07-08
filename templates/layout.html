@@ -17,7 +17,7 @@
         <nav>
             <ul class="nav nav-pills pull-right">
                 {% if not session.logged_in %}
-                <li><a href="{{ url_for('login') }}">Registrovat</a></li>
+                <li><a href="{{ url_for('register') }}">Registrovat</a></li>
                 <li><a href="{{ url_for('login') }}">Přihlásit</a></li>
                 {% else %}
                 <li role="presentation" class="active"><a href="{{ url_for('show_competitors') }}">Soutěže</a></li>

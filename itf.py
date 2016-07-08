@@ -2,23 +2,23 @@
 """
     ITF competition
     ~~~~~~~~
-    ITF competition portal written with Flask and sqlite3.
+    ITF competition portal is written in Flask and sqlite3.
     :copyright: (c) 2016 by Stanislav Valášek, valasek@gmail.com.
     :license: GPL v3, see LICENSE for more details.
 """
-# all the imports
-import os
-import sqlite3
 
+# all the imports
+import forms
+import os, sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 # from flask_debugtoolbar import DebugToolbarExtension
 
 
-# fix for jinga2 templates encofing
+# set for jinga2 templates encofing
 import sys
-
 reload(sys)
 sys.setdefaultencoding('utf-8')
+
 
 # create our little application :)
 app = Flask(__name__)
@@ -146,7 +146,7 @@ def add_competitor():
             flash('Zadejte příjmení')
         elif not request.form['birthdate']:
             flash('Zadejte datum narození')
-        #elif not request.form['sex']:
+        # elif not request.form['sex']:
         #    flash('Zadejte pohlaví')
         elif not request.form['weight']:
             flash('Zadejte váhu')
@@ -213,6 +213,24 @@ def logout():
     session.pop('email', None)
     flash('Byli jste odhlášeni')
     return redirect(url_for('show_competitors'))
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    app.logger.info('Route: /register')
+    form = forms.RegistrationForm(request.form)
+    if request.method == 'POST' and form.validate():
+        app.logger.info('post & valid form')
+        db = get_db()
+        db.execute('INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES (?, ?, ?, ?, ?, ?)',
+            (form.first_name.data, form.last_name.data, form.email.data, form.password.data, 1, 0))
+        db.commit()
+        #SQLAlchemy code
+        #user = User(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
+        #db_session.add(user)
+        flash('Registrace proběhla úspěšně.')
+        return redirect(url_for('show_competitors'))
+    return render_template('register.html', form=form)
 
 
 if __name__ == "__main__":

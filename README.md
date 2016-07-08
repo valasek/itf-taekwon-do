@@ -5,8 +5,8 @@ Portal allows you to register competitor to particular competition.
 Current version supports CZ only.
 
 # ToDo
-* Technical decription
-* Usage description 
+* Use SQLAlchemy
+* Add technical and usage description
 * Internationalization
-* Internationalization
+
 

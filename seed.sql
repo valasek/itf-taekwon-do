@@ -32,5 +32,6 @@ VALUES (500822, 'Jakub', 'Roubal', 'Muž', 'I.Dan', '11. January 2000', 1);
 INSERT INTO teams (name) VALUES ('Sparring');
 INSERT INTO teams (name) VALUES ('Stránčice');
 
-INSERT INTO users (email, pw_hash, team_id, is_admin) VALUES ('admin', 'admin', 1, 1);
-INSERT INTO users (email, pw_hash, team_id, is_admin) VALUES ('administrator@taekwondocz.com', 'robert', 1, 0);
+INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('AdminF', 'AdminL', 'admin', 'admin', 1, 1);
+INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('UserF', 'UserL', 'user', 'user', 1, 0);
+INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('Robert', 'Pokorny','administrator@taekwondocz.com', 'robert', 1, 1);
