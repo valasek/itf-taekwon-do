@@ -164,8 +164,7 @@ def add_competitor():
 
     # select data from  DB
     db = get_db()
-    cur = db.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?',
-                     [session['user_id']])
+    cur = db.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
     member = cur.fetchall()
 
     return render_template('member.html', member=member)
@@ -177,8 +176,10 @@ def view_competitors():
         abort(401)
 
     db = get_db()
-    # select data from  DB
-    cur = db.execute('SELECT itf_id, first_name, last_name, sex, birthdate, level FROM competitors ORDER BY id DESC')
+    # get the team ID
+    team_id = query_db('''SELECT teams.id FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?''', [session['user_id']], one=True)
+    # Select members for the team
+    cur = db.execute('SELECT itf_id, first_name, last_name, sex, birthdate, level FROM competitors where team_id = ? ORDER BY id DESC', (team_id['id'],))
     competitors = cur.fetchall()
 
     return render_template('members.html', competitors=competitors)

@@ -19,19 +19,19 @@ VALUES (507195, 'Natáli', 'Podskalníková', 'Žena', '1.Kup', '19. May 2003', 
 INSERT INTO competitors (itf_id, first_name, last_name, sex, birthdate, level, team_id)
 VALUES (507191, 'Sára', 'Podskalníková', 'Žena', 'I.Dan', '13. June 2000', 1);
 INSERT INTO competitors (itf_id, first_name, last_name, sex, birthdate, level, team_id)
-VALUES (507196, 'Patricie', 'Pokorná', 'Žena', '1.Kup', '2. December 2002', 1);
+VALUES (507196, 'Patricie', 'Pokorná', 'Žena', '1.Kup', '2. December 2002', 2);
 INSERT INTO competitors (itf_id, first_name, last_name, sex, birthdate, level, team_id)
-VALUES (510380, 'Antonín', 'Pokorný', 'Muž', '6.Kup', '14. December 2006', 1);
+VALUES (510380, 'Antonín', 'Pokorný', 'Muž', '6.Kup', '14. December 2006', 2);
 INSERT INTO competitors (itf_id, first_name, last_name, sex, birthdate, level, team_id)
-VALUES (509636, 'Daniela', 'Richterová', 'Žena', '3.Kup', '2. April 2004', 1);
+VALUES (509636, 'Daniela', 'Richterová', 'Žena', '3.Kup', '2. April 2004', 2);
 INSERT INTO competitors (itf_id, first_name, last_name, sex, birthdate, level, team_id)
-VALUES (510384, 'Davil', 'Roubal', 'Muž', '4.Kup', '17. July 1998', 1);
+VALUES (510384, 'Davil', 'Roubal', 'Muž', '4.Kup', '17. July 1998', 2);
 INSERT INTO competitors (itf_id, first_name, last_name, sex, birthdate, level, team_id)
-VALUES (500822, 'Jakub', 'Roubal', 'Muž', 'I.Dan', '11. January 2000', 1);
+VALUES (500822, 'Jakub', 'Roubal', 'Muž', 'I.Dan', '11. January 2000', 2);
 
 INSERT INTO teams (name) VALUES ('Sparring');
 INSERT INTO teams (name) VALUES ('Stránčice');
 
 INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('AdminF', 'AdminL', 'admin', 'admin', 1, 1);
-INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('UserF', 'UserL', 'user', 'user', 1, 0);
+INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('UserF', 'UserL', 'user', 'user', 2, 0);
 INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('Robert', 'Pokorny','administrator@taekwondocz.com', 'robert', 1, 1);

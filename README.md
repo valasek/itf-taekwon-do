@@ -5,7 +5,7 @@ Portal allows you to register competitor to particular competition.
 Current version supports CZ only.
 
 # ToDo
-* Show members in the team only
+* Show all members for admin
 * Add delete and edit competitor
 * and team members to competition
 * Use SQLAlchemy
