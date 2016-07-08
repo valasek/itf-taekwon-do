@@ -220,10 +220,12 @@ def register():
     app.logger.info('Route: /register')
     form = forms.RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        app.logger.info('post & valid form')
         db = get_db()
+        db.execute('INSERT INTO teams (name) VALUES (?)', ([form.team.data]))
+        db.commit()
+        team_id = query_db('''SELECT id FROM teams WHERE name = ?''', [form.team.data], one=True)
         db.execute('INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES (?, ?, ?, ?, ?, ?)',
-            (form.first_name.data, form.last_name.data, form.email.data, form.password.data, 1, 0))
+            (form.first_name.data, form.last_name.data, form.email.data, form.password.data, team_id['id'], 0))
         db.commit()
         #SQLAlchemy code
         #user = User(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
