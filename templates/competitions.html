@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block title %}Soutěže{% endblock %}
+{% block head %}
+<!-- Google maps scripts -->
+<script src="http://maps.googleapis.com/maps/api/js"></script>
+<script>
+    function initialize() {
+      var mapProp = {
+        center:new google.maps.LatLng( {{competition.langlong}}),
+        zoom:15,
+        mapTypeId:google.maps.MapTypeId.ROADMAP
+      };
+      var map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+    }
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+{% endblock %}
+{% block page_title %}Soutěže{% endblock %}
+{% block body %}
+{% if session.logged_in %}
+
+<div class="row">
+    <div class="col-sm-4">
+        <div class="row">
+            <div class="col-sm-6"><strong>Název</strong></div>
+            <div class="col-sm-6">{{competition.name}}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><strong>Místo</strong></div>
+            <div class="col-sm-6">{{competition.location}}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><strong>Datum</strong></div>
+            <div class="col-sm-6">{{competition.date}}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><strong>Uzávěrka</strong></div>
+            <div class="col-sm-6">{{competition.deadline}}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><strong>Startovné na člena</strong></div>
+            <div class="col-sm-6">{{competition.fee}}</div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6"><strong>Propozice</strong></div>
+            <div class="col-sm-6"><a href="{{competition.competition_instructions}}">Propozice</a></div>
+        </div>
+        <div class="row" align="center">
+            <br/>
+            <br/>
+            <a href="members.html">
+                <button type="button" class="btn btn-info">Přihlásit na soutěž</button>
+            </a>
+        </div>
+    </div>
+    <div class="col-sm-8">
+        <div class="row">
+            <div id="googleMap" style="width:500px;height:380px;"></div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block title %}Úprava člena{% endblock %}
+{% block page_title %}Úprava člena{% endblock %}
+{% block body %}
+{% if session.logged_in %}
+<form action="{{ url_for('add_competitor') }}" method="post" enctype="multipart/form-data" class=add-competitor>
+    <dl>
+        <div class="row">
+            <div class="col-sm-6"><h4>Osobní informace</h4></div>
+            <div class="col-sm-6"><h4>Foto</h4></div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>ID ITF:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <dd><input type="text" class="form-control" name="itf_id"></dd>
+                    </div>
+                </div>
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>Klub:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <dd><input type="text" class="form-control" name="team" value="{{ member[0]['name'] }}"></dd>
+                    </div>
+                </div>
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>Jméno:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <dd><input type="text" class="form-control" name="first_name">
+                        <dd></dd>
+                    </div>
+                </div>
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>Příjmení:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <dd><input type="text" class="form-control" name="last_name"></dd>
+                    </div>
+                </div>
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>Datum narození:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <dd><input type="text" class="form-control" name="birthdate"></dd>
+                    </div>
+                </div>
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>Pohlaví:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <label class="radio-inline">
+                            <dd><input type="radio" name="sex" value="female">&nbsp;Žena&nbsp;</dd>
+                        </label>
+                        <label class="radio-inline">
+                            <dd><input type="radio" name="sex" value="male">&nbsp;Muž&nbsp;</dd>
+                        </label>
+                    </div>
+                </div>
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>Váha:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <dd><input type="text" class="form-control" name="weight"></dd>
+                    </div>
+                </div>
+                <div class="row">
+                    <dt>
+                    <div class="col-sm-6"><strong>Technický stupeň:</strong></div>
+                    </dt>
+                    <div class="col-sm-6">
+                        <dd><select class="selectpicker" name="level">
+                            <option>9 kup</option>
+                            <option>8 kup</option>
+                            <option>8 kup</option>
+                            <option>1 DAN</option>
+                            <option>8 DAN</option>
+                            <option>9 DAN</option>
+                        </select></dd>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="row">
+                    <div class="col-sm-12"><img src="./static/photo.jpg"/></div>
+                </div>
+            </div>
+        </div>
+    </dl>
+    <div align="center">
+        <br><br>
+        <input type="submit" name="submit" value="Uložit" class="btn btn-info">
+        <br><br><br><br>
+    </div>
+</form>
+{% endif %}
+
+{% endblock %}

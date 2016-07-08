@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block title %}Přihlášení{% endblock %}
+{% block page_title %}Přihlášení{% endblock %}
+{% block body %}
+{% if error %}<p class=error><strong>Chyba:</strong> {{ error }}{% endif %}
+<form action="{{ url_for('login') }}" method=post>
+    <dl>
+        <div class="row">
+            <div class="col-sm-4">&nbsp;</div>
+            <div class="col-sm-1">
+                <div class="row">
+                    <dt><strong>Email</strong>
+                    <dt>
+                </div>
+                <div class="row">
+                    <dt><strong>Heslo</strong>
+                    <dt>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <div class="row">
+                    <dd><input type=text name=email></dd>
+                </div>
+                <div class="row">
+                    <dd><input type=password name=password></dd>
+                </div>
+                <div align="center"><br><input type=submit value=Login class="btn btn-info"></div>
+            </div>
+            <div class="col-sm-5">&nbsp;</div>
+        </div>
+    </dl>
+
+</form>
+{% endblock %}

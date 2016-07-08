@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" type="image/png" href="./static/favicon.png"/>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="./static/bootstrap.min.css"/>
+    <title>{% block title %}{% endblock %} - ČNUT ITF</title>
+    {% block head %}{% endblock %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <nav>
+            <ul class="nav nav-pills pull-right">
+                {% if not session.logged_in %}
+                <li><a href="{{ url_for('login') }}">Registrovat</a></li>
+                <li><a href="{{ url_for('login') }}">Přihlásit</a></li>
+                {% else %}
+                <li role="presentation" class="active"><a href="{{ url_for('show_competitors') }}">Soutěže</a></li>
+                <li role="presentation"><a href="members">Tým</a></li>
+                {% if session.is_admin %}
+                <li role="presentation"><a href="#">Administrace</a></li>
+                {% endif %}
+                <li><a href="{{ url_for('logout') }}">Odhlásit</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+        <h3 class="text-muted">{% block page_title %}{% endblock %}</h3>
+    </div>
+    <br/><br/>
+
+    {% for message in get_flashed_messages() %}
+    <div class=flash>{{ message }}</div>
+    {% endfor %}
+    {% block body %}{% endblock %}
+
+    <br/><br/>
+    <footer class="footer">
+        <p>&copy; Česká Národní Unie Taekwon-Do ITF 2016</p>
+    </footer>
+
+</div>
+</body>
+</html>
