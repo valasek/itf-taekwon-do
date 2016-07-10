@@ -1,11 +1,21 @@
 {% extends "layout.html" %}
 {% block title %}Členové{% endblock %}
 {% block head %}
-<!-- jQuery library -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src=".jquery-1.12.3.js"></script>
-<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <!-- jQuery library -->
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+    <script>
+      function delMember(itf_id) {
+          $.getJSON(
+                  $SCRIPT_ROOT + '/_delete_member',
+                  data = { id: itf_id },
+                  function (data) { $('#'+itf_id).remove(); }
+          )
+      };
+    </script>
 {% endblock %}
 {% block page_title %}Členové{% endblock %}
 {% block body %}
@@ -29,19 +39,19 @@
     </thead>
     <tbody>
     {% for competitor in competitors %}
-    <tr>
+    <tr id="{{competitor.itf_id}}">
         <td>{{ competitor.itf_id }}</td>
         <td>{{ competitor.first_name }}</td>
         <td>{{ competitor.last_name|safe }}</td>
         <td>{{ competitor.sex }}</td>
         <td>{{ competitor.birthdate }}</td>
         <td>{{ competitor.level }}</td>
-        <td>
+        <td align="center">
             <div class="checkbox">
                 <label><input type="checkbox" value=""></label>
             </div>
         </td>
-        <td><a href="member.html">Uprav</a>, <a href="#">Vymazat</a></td>
+        <td align="center"><button class="glyphicon glyphicon-edit"></button>&nbsp;&nbsp;&nbsp;<button class="glyphicon glyphicon-remove-sign" onclick="delMember({{competitor.itf_id}})"></button></td>
     </tr>
     {% else %}
     <em>Před nahlášením na soutěž přidejte členy svého klubu.</em>
@@ -57,9 +67,9 @@
         <button type="button" class="btn btn-info">Přihlásit na soutěž</button>
     </a>
     <br/><br/><br/>
-    <div>
         {% endif %}
         {# {% if session.logged_in %}
+        <div>
         <form action="{{ url_for('add_competitor') }}" method=post class=add-competitor>
             <dl>
                 <dt>Jméno:
@@ -69,8 +79,8 @@
                 <dd><input type=submit value=Share>
             </dl>
         </form>
+        </div>
         {% endif %}
         #}
         {% endblock %}
-    </div>
 </div>

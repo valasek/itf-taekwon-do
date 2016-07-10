@@ -10,7 +10,7 @@
 # all the imports
 import forms
 import os, sqlite3
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 # from flask_debugtoolbar import DebugToolbarExtension
 
 
@@ -76,6 +76,8 @@ def initdb_command():
     """Initializes the database."""
     init_db()
     print 'Initialized the database.'
+    seed_db()
+    print 'Seeded the database.'
 
 
 @app.cli.command('seeddb')
@@ -90,6 +92,14 @@ def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
     return (rv[0] if rv else None) if one else rv
+
+
+def get_team_id():
+    """Get team ID"""
+    db = get_db()
+    team_id = query_db('''SELECT teams.id FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?''', [session['user_id']], one=True)
+    app.logger.info("Got team ID: %s", team_id['id'])
+    return team_id['id']
 
 
 @app.before_request
@@ -154,8 +164,8 @@ def add_competitor():
             flash('Zadejte úroveň')
         else:
             db = get_db()
-            db.execute('INSERT INTO competitors (itf_id, first_name, last_name, birthdate, sex, weight, level) VALUES (?, ?, ?, ?, ?, ?, ?)', (
-            request.form['itf_id'], request.form['first_name'], request.form['last_name'], request.form['birthdate'], "Muz", request.form['weight'], request.form['level']))
+            db.execute('INSERT INTO competitors (itf_id, first_name, last_name, birthdate, sex, weight, level, team_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (
+            request.form['itf_id'], request.form['first_name'], request.form['last_name'], request.form['birthdate'], "Muz", request.form['weight'], request.form['level'], session['team_id']))
             # db.execute('insert into competitors (itf_id, first_name, last_name, sex, birthdate, weight, level, team_id) values (?, ?, ?, ?, ?, ?, ?, ?)',
             #          [request.form['itf_id'], [request.form['first_name']], [request.form['last_name']], [request.form['sex']], [request.form['birthdate']], [request.form['weight']], [request.form['level']], [session['team_id']])
             pass
@@ -170,17 +180,32 @@ def add_competitor():
     return render_template('member.html', member=member)
 
 
+@app.route('/_delete_member')
+def delete_member():
+    app.logger.info("CALL: _delete_member")
+    id = request.args.get('id', 0, type=int)
+    app.logger.info(id)
+    db = get_db()
+    cur = db.execute('DELETE FROM competitors where itf_id = ?', [id])
+    db.commit()
+    flash('Člen vymazán.')
+    return jsonify(1)
+    # return render_template('members.html')
+
+
 @app.route('/members', methods=['POST', 'GET'])
 def view_competitors():
+    app.logger.info("CALL: view_competitors")
+    db = get_db()
+    # Select members for the team
+    cur = db.execute('SELECT itf_id, first_name, last_name, sex, birthdate, level FROM competitors where team_id = ? ORDER BY id DESC', [session['team_id']])
+    competitors = cur.fetchall()
     if not session.get('logged_in'):
         abort(401)
-
-    db = get_db()
-    # get the team ID
-    team_id = query_db('''SELECT teams.id FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?''', [session['user_id']], one=True)
-    # Select members for the team
-    cur = db.execute('SELECT itf_id, first_name, last_name, sex, birthdate, level FROM competitors where team_id = ? ORDER BY id DESC', (team_id['id'],))
-    competitors = cur.fetchall()
+    if request.method == 'POST':
+        app.logger.info("post")
+    else:
+        app.logger.info("get")
 
     return render_template('members.html', competitors=competitors)
 
@@ -224,9 +249,9 @@ def register():
         db = get_db()
         db.execute('INSERT INTO teams (name) VALUES (?)', ([form.team.data]))
         db.commit()
-        team_id = query_db('''SELECT id FROM teams WHERE name = ?''', [form.team.data], one=True)
+        session['team_id'] = get_team_id()
         db.execute('INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES (?, ?, ?, ?, ?, ?)',
-            (form.first_name.data, form.last_name.data, form.email.data, form.password.data, team_id['id'], 0))
+            (form.first_name.data, form.last_name.data, form.email.data, form.password.data, session['team_id'], 0))
         db.commit()
         #SQLAlchemy code
         #user = User(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
