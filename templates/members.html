@@ -11,18 +11,21 @@
       function delMember(itf_id) {
           $.getJSON(
                   $SCRIPT_ROOT + '/_delete_member',
-                  data = { id: itf_id },
+                  data = { id:itf_id },
                   function (data) { $('#'+itf_id).remove(); }
           )
       };
       function addCompetitors() {
           var ids = [];
-          $("input:checkbox:checked").each(function(element){ids.push($(element).attr("id"))});
-          alert(ids.toString())
+          $("input:checkbox:checked").each(function(data){
+              var $this=$(this);
+              ids.push($this.attr("id"));
+          })
+          //alert(ids.toString());
           $.getJSON(
                   $SCRIPT_ROOT + '/_add_to_competition',
-                  data = { id: ids },
-                  function (data) { alert("Úspěšně přihlášeno na soutěž " + ids.length + "  členů");}
+                  data = { "id":ids },
+                  function (data) { alert("Úspěšně přihlášeno na soutěž " + ids.length + " členů");}
           )
       };
     </script>

@@ -117,8 +117,6 @@ def show_competitors():
     competition = cur.fetchall()
     cur = db.execute('SELECT count(competitors.id) as competing_members FROM competitors INNER JOIN member_competition ON member_competition.member_id = competitors.id WHERE competitors.team_id = ?', [session['team_id']])
     competing_members = cur.fetchone()
-    app.logger.info(competing_members['competing_members'])
-    app.logger.info(session['team_id'])
 
     return render_template('competitions.html', competition=competition[0], competing_members=competing_members[0])
 
@@ -179,7 +177,6 @@ def add_competitor():
 def delete_member():
     app.logger.info("CALL: _delete_member")
     id = request.args.get('id', 0, type=int)
-    app.logger.info(id)
     db = get_db()
     cur = db.execute('DELETE FROM competitors where itf_id = ?', [id])
     db.commit()
@@ -190,24 +187,13 @@ def delete_member():
 @app.route('/_add_to_competition')
 def add_member_to_competition():
     app.logger.info("CALL: _add_to_competition")
-    app.logger.info(type(request.args))
-    dict = request.args
-    app.logger.info(type(dict))
-    id1 = request.args.get('id')
-    id2 = request.args.get('id', 1, type=int)
-    app.logger.info(id1)
-    app.logger.info(id2)
-    app.logger.info(request.args.getlist(''))
-    for key in dict:
-        app.logger.info(key, 'corresponds to', dict[key])
-
-    for key in dict:
-        app.logger.info("for")
-        app.logger.info(key, dict[key])
-    app.logger.info("after while")
-    #db = get_db()
-    #cur = db.execute('DELETE FROM competitors where itf_id = ?', [id])
-    #db.commit()
+    dict = request.args.getlist("id[]")
+    app.logger.info(dict)
+    db = get_db()
+    for id in dict:
+        #app.logger.info(id)
+        cur = db.execute('INSERT INTO member_competition (member_id, competition_id) VALUES (?, ?)', (id, "1"))
+    db.commit()
     #flash('Člen vymazán.')
     return jsonify(1)
 
