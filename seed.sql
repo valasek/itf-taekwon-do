@@ -35,3 +35,9 @@ INSERT INTO teams (name) VALUES ('Stránčice');
 INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('AdminF', 'AdminL', 'admin', 'admin', 1, 1);
 INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('UserF', 'UserL', 'user', 'user', 2, 0);
 INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES ('Robert', 'Pokorny','administrator@taekwondocz.com', 'robert', 1, 1);
+
+INSERT INTO competition (name, location, date, deadline, fee, instructions_url, langlong) VALUES ('Mistrovství Benátky 2016', 'Benátky nad Jizerou', '15. července 2016', '13. července 2016', '200.- Kč', 'http://taekwondocz.com/files/PROPOZICE%20MR%202016.pdf', '50.289, 14.830');
+
+INSERT INTO member_competition (member_id, competition_id) VALUES (1, 1);
+INSERT INTO member_competition (member_id, competition_id) VALUES (2, 1);
+INSERT INTO member_competition (member_id, competition_id) VALUES (3, 1);

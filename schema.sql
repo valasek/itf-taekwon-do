@@ -27,3 +27,22 @@ CREATE TABLE users (
   team_id     INTEGER NOT NULL,
   is_admin    INTEGER NOT NULL
 );
+
+DROP TABLE IF EXISTS competition;
+CREATE TABLE competition (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  name              TEXT    NOT NULL,
+  location          TEXT    NOT NULL,
+  date              TEXT    NOT NULL,
+  deadline          TEXT    NOT NULL,
+  fee               TEXT    NOT NULL,
+  instructions_url  TEXT    NOT NULL,
+  langlong          TEXT
+);
+
+DROP TABLE IF EXISTS member_competition;
+CREATE TABLE member_competition (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  member_id         INTEGER    NOT NULL,
+  competition_id    INTEGER    NOT NULL
+);

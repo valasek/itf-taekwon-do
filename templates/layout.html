@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <link rel="shortcut icon" type="image/png" href="./static/favicon.png"/>
     <!-- Latest compiled and minified CSS -->
@@ -17,7 +16,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
-
 <body>
 <div class="container">
     <div class="header">
@@ -39,17 +37,14 @@
         <h3 class="text-muted">{% block page_title %}{% endblock %}</h3>
     </div>
     <br/><br/>
-
     {% for message in get_flashed_messages() %}
     <div class=flash>{{ message }}</div>
     {% endfor %}
     {% block body %}{% endblock %}
-
     <br/><br/>
     <footer class="footer">
         <p>&copy; Česká Národní Unie Taekwon-Do ITF 2016</p>
     </footer>
-
 </div>
 </body>
 </html>
