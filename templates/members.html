@@ -44,9 +44,11 @@
                 <th>Jméno</th>
                 <th>Příjmení</th>
                 <th>Pohlaví</th>
-                <th>Datum narození</th>
                 <th>Stupeň</th>
+                <th>Datum narození</th>
+                {% if show_competition_sign_in %}
                 <th>Přihlásit</th>
+                {% endif %}
                 <th>Akce</th>
             </tr>
             </thead>
@@ -59,11 +61,13 @@
                 <td>{{ competitor.sex }}</td>
                 <td>{{ competitor.birthdate }}</td>
                 <td>{{ competitor.level }}</td>
+                {% if show_competition_sign_in %}
                 <td align="center">
                     <div class="checkbox">
-                        <label><input type="checkbox" id="{{competitor.itf_id}}"></label>   
+                        <label><input type="checkbox" {{is_signed_in[competitor.itf_id]}} id="{{competitor.itf_id}}"></label>
                     </div>
                 </td>
+                {% endif %}
                 <td align="center"><button class="glyphicon glyphicon-edit"></button>&nbsp;&nbsp;&nbsp;<button class="glyphicon glyphicon-remove-sign" onclick="delMember({{competitor.itf_id}})"></button></td>
             </tr>
             {% else %}
@@ -76,7 +80,9 @@
             <a href="{{ url_for('edit_competitor') }}">
                 <button type="button" class="btn btn-info">Přidat člena</button>
             </a>
+            {% if show_competition_sign_in %}
             <button type="button" class="btn btn-info" onclick="addCompetitors()">Přihlásit na soutěž</button>
+            {% endif %}
         </div>
         <br/><br/><br/>
         {% endif %}

@@ -115,10 +115,24 @@ def show_competitors():
     db = get_db()
     cur = db.execute('SELECT * from competition')
     competition = cur.fetchall()
-    cur = db.execute('SELECT count(competitors.id) as competing_members FROM competitors INNER JOIN member_competition ON member_competition.member_id = competitors.id WHERE competitors.team_id = ?', [session['team_id']])
-    competing_members = cur.fetchone()
+    # cur = db.execute('SELECT count(competitors.id) as competing_members FROM competitors INNER JOIN member_competition ON member_competition.member_id = competitors.id WHERE competitors.team_id = ?', [session['team_id']])
+    # competing_members = cur.fetchone()
+    # competing_members=competing_members[0]
 
-    return render_template('competitions.html', competition=competition[0], competing_members=competing_members[0])
+    return render_template('competitions.html', competition=competition[0])
+
+
+@app.route('/competition-members')
+def show_competition_members():
+    # select data from  DB
+    db = get_db()
+    cur = db.execute('SELECT * FROM competitors JOIN member_competition ON competitors.member_id = member_competition.id WHERE competition_id = ?', session['competition_id'])
+    competitors = cur.fetchall()
+    # cur = db.execute('SELECT count(competitors.id) as competing_members FROM competitors INNER JOIN member_competition ON member_competition.member_id = competitors.id WHERE competitors.team_id = ?', [session['team_id']])
+    # competing_members = cur.fetchone()
+    # competing_members=competing_members[0]
+
+    return render_template('competitions.html', competition=competition[0])
 
 
 @app.route('/edit', methods=['POST', 'GET'])
@@ -191,10 +205,8 @@ def add_member_to_competition():
     app.logger.info(dict)
     db = get_db()
     for id in dict:
-        #app.logger.info(id)
-        cur = db.execute('INSERT INTO member_competition (member_id, competition_id) VALUES (?, ?)', (id, "1"))
+        cur = db.execute('INSERT INTO member_competition (member_id, competition_id) VALUES (?, ?)', (id, session['competition_id']))
     db.commit()
-    #flash('Člen vymazán.')
     return jsonify(1)
 
 
@@ -203,16 +215,23 @@ def view_competitors():
     app.logger.info("CALL: view_competitors")
     db = get_db()
     # Select members for the team
-    cur = db.execute('SELECT itf_id, first_name, last_name, sex, birthdate, level FROM competitors where team_id = ? ORDER BY id DESC', [session['team_id']])
+    cur = db.execute('SELECT id, itf_id, first_name, last_name, sex, birthdate, level FROM competitors where team_id = ? ORDER BY id DESC', [session['team_id']])
     competitors = cur.fetchall()
+    is_signed_in = {}
+    for competitor in competitors:
+        cur = db.execute('SELECT * FROM member_competition WHERE member_id = ?', [competitor['id']])
+        is_signed = cur.fetchall()
+        if len(is_signed)>0:
+            is_signed_in[competitor['itf_id']] = "checked"
+
+    app.logger.info(is_signed_in)
+
     if not session.get('logged_in'):
         abort(401)
-    if request.method == 'POST':
-        app.logger.info("post")
-    else:
-        app.logger.info("get")
+    if request.method == 'GET':
+        show_competition_sign_in = request.args.get('show')
 
-    return render_template('members.html', competitors=competitors)
+    return render_template('members.html', competitors=competitors, show_competition_sign_in=show_competition_sign_in, is_signed_in=is_signed_in)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -232,6 +251,7 @@ def login():
             session['is_admin'] = user['is_admin']
             session['email'] = user['email']
             session['team_id'] = user['team_id']
+            session['competition_id'] = "1"
             return redirect(url_for('show_competitors'))
 
     return render_template('login.html', error=error)

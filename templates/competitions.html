@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
-{% block title %}Soutěže{% endblock %}
+{% block title %}Soutěž{% endblock %}
 {% block head %}
 <!-- Google maps scripts -->
-<script src="http://maps.googleapis.com/maps/api/js"></script>
+<!-- <script src="http://maps.googleapis.com/maps/api/js"></script> -->
+<script src="./static/js"></script>
 <script>
     function initialize() {
       var mapProp = {
@@ -15,7 +16,7 @@
     google.maps.event.addDomListener(window, 'load', initialize);
 </script>
 {% endblock %}
-{% block page_title %}Soutěže{% endblock %}
+{% block page_title %}Soutěž{% endblock %}
 {% block body %}
 {% if session.logged_in %}
 
@@ -45,15 +46,14 @@
             <div class="col-sm-6"><strong>Propozice</strong></div>
             <div class="col-sm-6"><a href="{{competition.instructions_url}}">Propozice</a></div>
         </div>
-        <div class="row">
-            <div class="col-sm-6"><strong>Přihlášených členů</strong></div>
-            <div class="col-sm-6">{{competing_members}}</div>
-        </div>
         <div class="row" align="center">
             <br/>
             <br/>
-            <a href="{{ url_for('view_competitors') }}">
+            <a href="members?show=True">
                 <button type="button" class="btn btn-info">Přihlásit na soutěž</button>
+            </a>
+            <a href="{{ url_for('view_competitors') }}">
+                <button type="button" class="btn btn-info">Seznam přihlášených</button>
             </a>
         </div>
     </div>

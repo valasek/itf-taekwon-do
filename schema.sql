@@ -46,3 +46,10 @@ CREATE TABLE member_competition (
   member_id         INTEGER    NOT NULL,
   competition_id    INTEGER    NOT NULL
 );
+
+DROP TABLE IF EXISTS member_competition_levels;
+CREATE TABLE member_competition (
+  id                INTEGER PRIMARY KEY AUTOINCREMENT,
+  member_id         INTEGER    NOT NULL,
+  competition_id    INTEGER    NOT NULL
+);
