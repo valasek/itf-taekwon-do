@@ -12,6 +12,8 @@ import forms
 import os, sqlite3
 from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 # from flask_debugtoolbar import DebugToolbarExtension
+from flask_sqlalchemy import SQLAlchemy
+
 
 
 # set for jinga2 templates encofing
@@ -20,9 +22,10 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 
-# create our little application :)
+# create appl
 app = Flask(__name__)
 app.config.from_object('config')
+
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
@@ -115,9 +118,6 @@ def show_competitors():
     db = get_db()
     cur = db.execute('SELECT * from competition')
     competition = cur.fetchall()
-    # cur = db.execute('SELECT count(competitors.id) as competing_members FROM competitors INNER JOIN member_competition ON member_competition.member_id = competitors.id WHERE competitors.team_id = ?', [session['team_id']])
-    # competing_members = cur.fetchone()
-    # competing_members=competing_members[0]
 
     return render_template('competitions.html', competition=competition[0])
 
@@ -126,13 +126,12 @@ def show_competitors():
 def show_competition_members():
     # select data from  DB
     db = get_db()
-    cur = db.execute('SELECT * FROM competitors JOIN member_competition ON competitors.member_id = member_competition.id WHERE competition_id = ?', session['competition_id'])
+    cur = db.execute('SELECT * FROM competitors JOIN member_competition ON competitors.id = member_competition.member_id WHERE competition_id = ?', [session['competition_id']])
     competitors = cur.fetchall()
-    # cur = db.execute('SELECT count(competitors.id) as competing_members FROM competitors INNER JOIN member_competition ON member_competition.member_id = competitors.id WHERE competitors.team_id = ?', [session['team_id']])
-    # competing_members = cur.fetchone()
-    # competing_members=competing_members[0]
+    cur = db.execute('SELECT * FROM competition WHERE id = ?', [session['competition_id']])
+    competition = cur.fetchall()
 
-    return render_template('competitions.html', competition=competition[0])
+    return render_template('competition-members.html', competitors=competitors, competition=competition[0])
 
 
 @app.route('/edit', methods=['POST', 'GET'])
@@ -173,8 +172,6 @@ def add_competitor():
             db = get_db()
             db.execute('INSERT INTO competitors (itf_id, first_name, last_name, birthdate, sex, weight, level, team_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (
             request.form['itf_id'], request.form['first_name'], request.form['last_name'], request.form['birthdate'], "Muz", request.form['weight'], request.form['level'], session['team_id']))
-            # db.execute('insert into competitors (itf_id, first_name, last_name, sex, birthdate, weight, level, team_id) values (?, ?, ?, ?, ?, ?, ?, ?)',
-            #          [request.form['itf_id'], [request.form['first_name']], [request.form['last_name']], [request.form['sex']], [request.form['birthdate']], [request.form['weight']], [request.form['level']], [session['team_id']])
             pass
             db.commit()
             flash('Nový soutěžící úspěšně přidán')

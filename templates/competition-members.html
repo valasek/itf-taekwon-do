@@ -1,82 +1,120 @@
 {% extends "layout.html" %}
-{% block title %}Členové{% endblock %}
+{% block title %}Přihlášený na soutěž{% endblock %}
 {% block head %}
     <!-- jQuery library -->
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
-    <script type=text/javascript>
-      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
-    </script>
-    <script>
-      function delMember(itf_id) {
-          $.getJSON(
-                  $SCRIPT_ROOT + '/_delete_member',
-                  data = { id:itf_id },
-                  function (data) { $('#'+itf_id).remove(); }
-          )
-      };
-      function addCompetitors() {
-          var ids = [];
-          $("input:checkbox:checked").each(function(data){
-              var $this=$(this);
-              ids.push($this.attr("id"));
-          })
-          //alert(ids.toString());
-          $.getJSON(
-                  $SCRIPT_ROOT + '/_add_to_competition',
-                  data = { "id":ids },
-                  function (data) { alert("Úspěšně přihlášeno na soutěž " + ids.length + " členů");}
-          )
-      };
-    </script>
 {% endblock %}
-{% block page_title %}Členové{% endblock %}
+{% block page_title %}Přihlášený na soutěž{% endblock %}
+        {% block nav %}
+        <h4 class="text-muted">{{ competition.name }}</h4>
+        <div>
+            <div class="row">
+                <div class="col-sm-2"><strong>Místo konání:</strong></div>
+                <div class="col-sm-2">{{ competition.location }}</div>
+                <div class="col-sm-2"><strong>Startovné na člena:</strong></div>
+                <div class="col-sm-2">{{competition.fee}}</div>
+                <div class="col-sm-4">&nbsp;</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"><strong>Datum konání:</strong></div>
+                <div class="col-sm-2">{{ competition.date }}</div>
+                <div class="col-sm-2"><strong>Celkem přihlášeno:</strong></div>
+                <div class="col-sm-2">XY</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"><strong>Uzávěrka:</strong></div>
+                <div class="col-sm-2">{{competition.deadline}}</div>
+                <div class="col-sm-2"><strong>Startovné celkem:</strong></div>
+                <div class="col-sm-2">1.600.- Kč</div>
+                <div class="col-sm-4">&nbsp;</div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2"><strong>Propozice:</strong></div>
+                <div class="col-sm-2"><a href ="{{competition.instructions_url}}">Propozice</a></div>
+                <div class="col-sm-8">&nbsp;</div>
+            </div>
+        </div>
+        {% endblock %}
 {% block body %}
     {% if session.logged_in %}
         <script>
             $(document).ready(function () {
                 $('#example').DataTable();
             });</script>
+        <h3 class="text-muted">Vyber členy</h3>
         <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
             <thead>
-            <tr>
-                <th>ID ITF</th>
-                <th>Jméno</th>
-                <th>Příjmení</th>
-                <th>Pohlaví</th>
-                <th>Stupeň</th>
-                <th>Datum narození</th>
-                <th>Přihlásit</th>
-                <th>Akce</th>
-            </tr>
+                <tr>
+                    <th>ID ITF</th>
+                    <th>Jméno</th>
+                    <th>Příjmení</th>
+                    <th>Tul</th>
+                    <th>Matsogi</th>
+                    <th>T-ki</th>
+                    <th>Wirok</th>
+                    <th>Mobum Matsogi</th>
+                    <th>Tul tym</th>
+                    <th>Rozhodčí</th>
+                    <th>Kouč</th>
+                </tr>
             </thead>
             <tbody>
-            {% for competitor in competitors %}
-            <tr id="{{competitor.itf_id}}">
-                <td>{{ competitor.itf_id }}</td>
-                <td>{{ competitor.first_name }}</td>
-                <td>{{ competitor.last_name|safe }}</td>
-                <td>{{ competitor.sex }}</td>
-                <td>{{ competitor.birthdate }}</td>
-                <td>{{ competitor.level }}</td>
-                <td align="center">
-                    <div class="checkbox">
-                        <label><input type="checkbox" id="{{competitor.itf_id}}"></label>   
-                    </div>
-                </td>
-                <td align="center"><button class="glyphicon glyphicon-edit"></button>&nbsp;&nbsp;&nbsp;<button class="glyphicon glyphicon-remove-sign" onclick="delMember({{competitor.itf_id}})"></button></td>
-            </tr>
-            {% else %}
-            <em>Před nahlášením na soutěž přidejte členy svého klubu.</em>
-            {% endfor %}
+                {% for competitor in competitors %}
+                <tr>
+                    <td>{{competitor.itf_id}}</td>
+                    <td>{{competitor.first_name}}</td>
+                    <td>{{competitor.last_name}}</td>
+                    <td><select class="selectpicker">
+                        <option>1 - 3 kup</option>
+                        <option>4 - 6 kup</option>
+                        <option>7 - 9 kup</option>
+                        </select>
+                    </td>
+                    <td><select class="selectpicker">
+                            <option>51 - 60 Kg</option>
+                            <option>61 - 70 Kg</option>
+                        </select>
+                    </td>
+                    <td><select class="selectpicker">
+                                <option>Hodnota 1</option>
+                                <option>Hodnota 2</option>
+                            </select>
+                    </td>
+                    <td><select class="selectpicker">
+                                <option>Hodnota 1</option>
+                                <option>Hodnota 2</option>
+                            </select>
+                    </td>
+                    <td><select class="selectpicker">
+                                <option>Hodnota 1</option>
+                                <option>Hodnota 2</option>
+                            </select>
+                    </td>
+                    <td><select class="selectpicker">
+                                <option>Hodnota 1</option>
+                                <option>Hodnota 2</option>
+                            </select>
+                    </td>
+                    <td>
+                        <div class="checkbox">
+                            <label><input type="checkbox" value=""></label>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="checkbox">
+                            <input type="checkbox" value="">
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
         <div align="center">
             <br/>
             <a href="{{ url_for('edit_competitor') }}">
-                <button type="button" class="btn btn-info">Přidat člena</button>
+                <button type="button" class="btn btn-info">Uložit</button>
             </a>
-            <button type="button" class="btn btn-info" onclick="addCompetitors()">Přihlásit na soutěž</button>
         </div>
         <br/><br/><br/>
         {% endif %}

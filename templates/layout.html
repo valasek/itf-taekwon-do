@@ -37,6 +37,7 @@
             </ul>
         </nav>
         <h3 class="text-muted">{% block page_title %}{% endblock %}</h3>
+        {% block nav %}{% endblock %}
     </div>
     <br/><br/>
     {% for message in get_flashed_messages() %}
