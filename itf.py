@@ -15,7 +15,6 @@ from flask import Flask, jsonify, request, session, g, redirect, url_for, abort,
 from flask_sqlalchemy import SQLAlchemy
 
 
-
 # set for jinga2 templates encofing
 import sys
 reload(sys)
@@ -23,14 +22,18 @@ sys.setdefaultencoding('utf-8')
 
 
 # create appl
-app = Flask(__name__)
-app.config.from_object('config')
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_pyfile('config.py')
 
 
 # Load default config and override config from an environment variable
 app.config.update(dict(
     DATABASE=os.path.join(app.root_path, app.config['DATABASE_NAME']),
 ))
+
+
+db_new = SQLAlchemy(app)
+from models import CompetitionCategories
 
 
 # the toolbar is only enabled in debug mode:
@@ -61,10 +64,14 @@ def close_db(exception):
 
 
 def init_db():
+    app.logger.debug("init_db started")
     db = get_db()
     with app.open_resource('schema.sql', mode='r') as f:
         db.cursor().executescript(f.read())
     db.commit()
+    # SQLAlchemy seed
+    import seed
+    app.logger.debug("init_db finished")
 
 
 def seed_db():
@@ -218,7 +225,7 @@ def view_competitors():
     for competitor in competitors:
         cur = db.execute('SELECT * FROM member_competition WHERE member_id = ?', [competitor['id']])
         is_signed = cur.fetchall()
-        if len(is_signed)>0:
+        if len(is_signed) > 0:
             is_signed_in[competitor['itf_id']] = "checked"
 
     app.logger.info(is_signed_in)
