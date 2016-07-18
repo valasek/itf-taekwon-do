@@ -32,9 +32,8 @@ app.config.update(dict(
 ))
 
 
-db_new = SQLAlchemy(app)
-from models import CompetitionCategories
-
+db = SQLAlchemy(app)
+from models import MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
 
 # the toolbar is only enabled in debug mode:
 # app.debug = True
@@ -65,36 +64,16 @@ def close_db(exception):
 
 def init_db():
     app.logger.debug("init_db started")
-    db = get_db()
-    with app.open_resource('schema.sql', mode='r') as f:
-        db.cursor().executescript(f.read())
-    db.commit()
     # SQLAlchemy seed
     import seed
     app.logger.debug("init_db finished")
-
-
-def seed_db():
-    db = get_db()
-    with app.open_resource('seed.sql', mode='r') as f:
-        db.cursor().executescript(f.read())
-    db.commit()
 
 
 @app.cli.command('initdb')
 def initdb_command():
     """Initializes the database."""
     init_db()
-    print 'Initialized the database.'
-    seed_db()
-    print 'Seeded the database.'
-
-
-@app.cli.command('seeddb')
-def seeddb_command():
-    """Seed the database."""
-    seed_db()
-    print 'Seeded the database.'
+    print 'Initialized and seeded the database.'
 
 
 def query_db(query, args=(), one=False):
@@ -106,7 +85,7 @@ def query_db(query, args=(), one=False):
 
 def get_team_id():
     """Get team ID"""
-    db = get_db()
+    db_old = get_db()
     team_id = query_db('''SELECT teams.id FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?''', [session['user_id']], one=True)
     app.logger.info("Got team ID: %s", team_id['id'])
     return team_id['id']
@@ -116,26 +95,22 @@ def get_team_id():
 def before_request():
     g.user = None
     if 'email' in session:
-        g.user = query_db('SELECT * FROM users WHERE email = ?', [session['email']], one=True)
+        g.user = Users.query.filter_by(email=session['email']).first()
 
 
 @app.route('/')
 def show_competitors():
-    # select data from  DB
-    db = get_db()
-    cur = db.execute('SELECT * from competition')
-    competition = cur.fetchall()
-
+    competition = Competitions.query.all()
     return render_template('competitions.html', competition=competition[0])
 
 
 @app.route('/competition-members')
 def show_competition_members():
     # select data from  DB
-    db = get_db()
-    cur = db.execute('SELECT * FROM competitors JOIN member_competition ON competitors.id = member_competition.member_id WHERE competition_id = ?', [session['competition_id']])
+    db_old = get_db()
+    cur = db_old.execute('SELECT * FROM competitors JOIN member_competition ON competitors.id = member_competition.member_id WHERE competition_id = ?', [session['competition_id']])
     competitors = cur.fetchall()
-    cur = db.execute('SELECT * FROM competition WHERE id = ?', [session['competition_id']])
+    cur = db_old.execute('SELECT * FROM competition WHERE id = ?', [session['competition_id']])
     competition = cur.fetchall()
 
     return render_template('competition-members.html', competitors=competitors, competition=competition[0])
@@ -146,8 +121,8 @@ def edit_competitor():
     if not session.get('logged_in'):
         abort(401)
     # select data from  DB
-    db = get_db()
-    cur = db.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?',
+    db_old = get_db()
+    cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?',
                      [session['user_id']])
     member = cur.fetchall()
 
@@ -176,16 +151,16 @@ def add_competitor():
         elif not request.form['level']:
             flash('Zadejte úroveň')
         else:
-            db = get_db()
-            db.execute('INSERT INTO competitors (itf_id, first_name, last_name, birthdate, sex, weight, level, team_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (
+            db_old = get_db()
+            db_old.execute('INSERT INTO competitors (itf_id, first_name, last_name, birthdate, sex, weight, level, team_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (
             request.form['itf_id'], request.form['first_name'], request.form['last_name'], request.form['birthdate'], "Muz", request.form['weight'], request.form['level'], session['team_id']))
             pass
-            db.commit()
+            db_old.commit()
             flash('Nový soutěžící úspěšně přidán')
 
     # select data from  DB
-    db = get_db()
-    cur = db.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
+    db_old = get_db()
+    cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
     member = cur.fetchall()
 
     return render_template('member.html', member=member)
@@ -195,9 +170,9 @@ def add_competitor():
 def delete_member():
     app.logger.info("CALL: _delete_member")
     id = request.args.get('id', 0, type=int)
-    db = get_db()
-    cur = db.execute('DELETE FROM competitors where itf_id = ?', [id])
-    db.commit()
+    db_old = get_db()
+    cur = db_old.execute('DELETE FROM competitors where itf_id = ?', [id])
+    db_old.commit()
     flash('Člen vymazán.')
     return jsonify(1)
 
@@ -207,34 +182,26 @@ def add_member_to_competition():
     app.logger.info("CALL: _add_to_competition")
     dict = request.args.getlist("id[]")
     app.logger.info(dict)
-    db = get_db()
+    db_old = get_db()
     for id in dict:
-        cur = db.execute('INSERT INTO member_competition (member_id, competition_id) VALUES (?, ?)', (id, session['competition_id']))
-    db.commit()
+        cur = db_old.execute('INSERT INTO member_competition (member_id, competition_id) VALUES (?, ?)', (id, session['competition_id']))
+    db_old.commit()
     return jsonify(1)
 
 
 @app.route('/members', methods=['POST', 'GET'])
 def view_competitors():
     app.logger.info("CALL: view_competitors")
-    db = get_db()
-    # Select members for the team
-    cur = db.execute('SELECT id, itf_id, first_name, last_name, sex, birthdate, level FROM competitors where team_id = ? ORDER BY id DESC', [session['team_id']])
-    competitors = cur.fetchall()
+    competitors = TeamMembers.query.filter_by(team_id=session['team_id'])
     is_signed_in = {}
     for competitor in competitors:
-        cur = db.execute('SELECT * FROM member_competition WHERE member_id = ?', [competitor['id']])
-        is_signed = cur.fetchall()
-        if len(is_signed) > 0:
-            is_signed_in[competitor['itf_id']] = "checked"
-
-    app.logger.info(is_signed_in)
-
+        is_signed = MemberCompetition.query.filter_by(member_id=competitor.id)
+        if is_signed.first() != None:
+            is_signed_in[competitor.itf_id] = "checked"
     if not session.get('logged_in'):
         abort(401)
     if request.method == 'GET':
         show_competition_sign_in = request.args.get('show')
-
     return render_template('members.html', competitors=competitors, show_competition_sign_in=show_competition_sign_in, is_signed_in=is_signed_in)
 
 
@@ -275,13 +242,13 @@ def register():
     app.logger.info('Route: /register')
     form = forms.RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        db = get_db()
-        db.execute('INSERT INTO teams (name) VALUES (?)', ([form.team.data]))
-        db.commit()
+        db_old = get_db()
+        db_old.execute('INSERT INTO teams (name) VALUES (?)', ([form.team.data]))
+        db_old.commit()
         session['team_id'] = get_team_id()
-        db.execute('INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES (?, ?, ?, ?, ?, ?)',
+        db_old.execute('INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES (?, ?, ?, ?, ?, ?)',
             (form.first_name.data, form.last_name.data, form.email.data, form.password.data, session['team_id'], 0))
-        db.commit()
+        db_old.commit()
         #SQLAlchemy code
         #user = User(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
         #db_session.add(user)
