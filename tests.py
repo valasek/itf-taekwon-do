@@ -21,7 +21,7 @@ class ItfTestCase(unittest.TestCase):
 
     def test_empty_db(self):
         rv = self.app.get('/')
-        assert b'' in rv.data
+        assert b'Soutěž' in rv.data
 
 if __name__ == '__main__':
     unittest.main()

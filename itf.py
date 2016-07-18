@@ -83,14 +83,6 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
-def get_team_id():
-    """Get team ID"""
-    db_old = get_db()
-    team_id = query_db('''SELECT teams.id FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?''', [session['user_id']], one=True)
-    app.logger.info("Got team ID: %s", team_id['id'])
-    return team_id['id']
-
-
 @app.before_request
 def before_request():
     g.user = None
@@ -121,10 +113,10 @@ def edit_competitor():
     if not session.get('logged_in'):
         abort(401)
     # select data from  DB
-    db_old = get_db()
-    cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?',
-                     [session['user_id']])
-    member = cur.fetchall()
+    # db_old = get_db()
+    # cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
+    # member = cur.fetchall()
+    member = db.session.query(Teams.team).join(TeamMembers).filter(TeamMembers.id==session['user_id']).all()
 
     return render_template('member.html', member=member)
 
@@ -210,18 +202,18 @@ def login():
     """Logs the user in."""
     error = None
     if request.method == 'POST':
-        user = query_db('''SELECT * FROM users WHERE email = ?''', [request.form['email']], one=True)
+        user = Users.query.filter_by(email=request.form['email']).first()
         if user is None:
             error = 'Invalid username'
-        elif user['pw_hash'] != request.form['password']:
+        elif user.pw_hash != request.form['password']:
             error = 'Invalid password'
         else:
             flash('Byl jste úspěšně přihlášen')
             session['logged_in'] = True
-            session['user_id'] = user['id']
-            session['is_admin'] = user['is_admin']
-            session['email'] = user['email']
-            session['team_id'] = user['team_id']
+            session['user_id'] = user.id
+            session['is_admin'] = user.is_admin
+            session['email'] = user.email
+            session['team_id'] = user.team_id
             session['competition_id'] = "1"
             return redirect(url_for('show_competitors'))
 
@@ -242,16 +234,13 @@ def register():
     app.logger.info('Route: /register')
     form = forms.RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
-        db_old = get_db()
-        db_old.execute('INSERT INTO teams (name) VALUES (?)', ([form.team.data]))
-        db_old.commit()
-        session['team_id'] = get_team_id()
-        db_old.execute('INSERT INTO users (first_name, last_name, email, pw_hash, team_id, is_admin) VALUES (?, ?, ?, ?, ?, ?)',
-            (form.first_name.data, form.last_name.data, form.email.data, form.password.data, session['team_id'], 0))
-        db_old.commit()
-        #SQLAlchemy code
-        #user = User(form.first_name.data, form.last_name.data, form.email.data, form.password.data)
-        #db_session.add(user)
+        team = Teams(form.team.data)
+        db.session.add(team)
+        db.session.commit()
+        session['team_id'] = team.id
+        user = Users(form.first_name.data, form.last_name.data, form.email.data, form.password.data, session['team_id'], 0)
+        db.session.add(user)
+        db.session.commit()
         flash('Registrace proběhla úspěšně.')
         return redirect(url_for('show_competitors'))
     return render_template('register.html', form=form)
