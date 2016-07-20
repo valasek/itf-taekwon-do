@@ -74,7 +74,7 @@ def before_request():
 
 @app.route('/')
 def show_competitors():
-    init_db()
+    init_db()ng
     competition = Competitions.query.all()
     return render_template('competitions.html', competition=competition[0])
 
