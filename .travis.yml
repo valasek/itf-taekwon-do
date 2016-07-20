@@ -12,4 +12,4 @@ install:
   - pip install -q -r requirements.txt
   - pip install -q -e .
 script:
-  - python setup.py tests.py
+  - python tests.py
