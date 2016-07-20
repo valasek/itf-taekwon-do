@@ -1,4 +1,4 @@
 *.pyc
-itf_db.db
+*.db
 instance/
 .idea/
