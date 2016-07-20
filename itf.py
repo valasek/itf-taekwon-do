@@ -13,6 +13,7 @@ import os, sqlite3
 from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 # from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
+from config import configure_app
 
 
 # set for jinga2 templates encofing
@@ -22,15 +23,16 @@ sys.setdefaultencoding('utf-8')
 
 
 # create appl
-app = Flask(__name__, instance_relative_config=True)
-app.config.from_pyfile('config.py')
+app = Flask(__name__,
+    instance_path=os.path.join(os.path.dirname(os.path.realpath(__file__)), 'instance'),
+    instance_relative_config=True)
 
+configure_app(app)
 
 # Load default config and override config from an environment variable
-app.config.update(dict(
-    DATABASE=os.path.join(app.root_path, app.config['DATABASE_NAME']),
-))
-
+#app.config.update(dict(
+#    DATABASE=os.path.join(app.root_path, app.config['DATABASE_NAME']),
+#))
 
 db = SQLAlchemy(app)
 from models import MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
@@ -41,25 +43,12 @@ from models import MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Te
 # toolbar.init_app(app)
 
 
-def connect_db():
-    """Connects to the specific database."""
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-
-
-def get_db():
-    """Opens a new database connection if there is none yet for the current application context."""
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
-
 @app.teardown_appcontext
 def close_db(exception):
     """Closes the database again at the end of the request."""
-    if hasattr(g, 'sqlite_db'):
-        g.sqlite_db.close()
+    # ToDo: Close SQLAlchemy session/conection
+    #if hasattr(g, 'sqlite_db'):
+    #    g.sqlite_db.close()
 
 
 def init_db():
@@ -74,13 +63,6 @@ def initdb_command():
     """Initializes the database."""
     init_db()
     print 'Initialized and seeded the database.'
-
-
-def query_db(query, args=(), one=False):
-    """Queries the database and returns a list of dictionaries."""
-    cur = get_db().execute(query, args)
-    rv = cur.fetchall()
-    return (rv[0] if rv else None) if one else rv
 
 
 @app.before_request

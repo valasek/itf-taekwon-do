@@ -6,7 +6,8 @@ python:
 #  - redis
 env:
   - FLASK=0.11.1
-  - FLASK=0.9
+  - FLASK_CONFIGURATION=test
+#  - FLASK=0.9
 install:
   - pip install -q Flask==$FLASK
   - pip install -q -r requirements.txt
