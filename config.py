@@ -18,7 +18,7 @@ class DevelopmentConfig(BaseConfig):
 class TestingConfig(BaseConfig):
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite://'
+    SQLALCHEMY_DATABASE_URI = 'sqlite://itf_alchemy_test_db.db'
     #SQLALCHEMY_DATABASE_URI = 'sqlite:///itf_alchemy_test_db.db'
     SECRET_KEY = '792842bc-c4df-4de1-9177-d5207bd9faa6'
 
