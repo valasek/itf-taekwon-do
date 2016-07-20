@@ -18,4 +18,3 @@ deploy:
   provider: heroku
   api_key:
     secure: "21f3c328-dea7-43b9-8ac1-c6d788875474"
-  app: itf
