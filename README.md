@@ -9,3 +9,5 @@ __Try demo__ at https://itf.herokuapp.com/
 Credentials: admin/admin or user/user
 
 *Version is not complete and supports only CZ language*
+
+Development version [![Build Status](https://travis-ci.org/valasek/itf-taekwondo.svg?branch=develop)](https://travis-ci.org/valasek/itf-taekwondo)
