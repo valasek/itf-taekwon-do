@@ -32,5 +32,5 @@ config = {
 def configure_app(app):
     config_name = os.getenv('FLASK_CONFIGURATION', 'default')
     app.config.from_object(config[config_name])
-    app.logger.debug("Loaded configuratrion: %s", config[config_name])
+    app.logger.debug("Loaded configuration: %s", config[config_name])
     #app.config.from_pyfile('config.py', silent=True)

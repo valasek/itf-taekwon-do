@@ -132,20 +132,22 @@ class TeamMembers(db.Model):
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
-    sex = db.Column(db.String, db.ForeignKey('dic_sex.id'))
+    sex_id = db.Column(db.String, db.ForeignKey('dic_sex.id'))
     birthdate = db.Column(db.Date)
     weight = db.Column(db.Integer)
-    level = db.Column(db.Integer, db.ForeignKey('dic_levels.id'))
+    level_id = db.Column(db.Integer, db.ForeignKey('dic_levels.id'))
+    level = db.relationship('Levels', backref=db.backref('team_members', lazy='joined'))
+    sex = db.relationship('Sex', backref=db.backref('team_members', lazy='joined'))
 
-    def __init__(self, itf_id, team_id, first_name, last_name, sex, birthdate, weight, level):
+    def __init__(self, itf_id, team_id, first_name, last_name, sex_id, birthdate, weight, level_id):
         self.itf_id = itf_id
         self.team_id = team_id
         self.first_name = first_name
         self.last_name = last_name
-        self.sex = sex
+        self.sex_id = sex_id
         self.birthdate = birthdate
         self.weight = weight
-        self.level = level
+        self.level_id = level_id
 
     def __repr__(self):
         return '<last_name {}>'.format(self.last_name)

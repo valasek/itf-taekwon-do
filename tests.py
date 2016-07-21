@@ -18,10 +18,32 @@ class ItfTestCase(unittest.TestCase):
         os.close(self.db_fd)
         os.unlink(itf.app.config['DATABASE'])
 
-
-    def test_empty_db(self):
+    def test_home_data(self):
         rv = self.app.get('/')
         assert b'Soutěž' in rv.data
+
+    def test_home_status_code(self):
+        result = self.app.get('/')
+        self.assertEqual(result.status_code, 200)
+
+    def login(self, username, password):
+        return self.app.post('/login', data=dict(
+            email=username,
+            password=password
+        ), follow_redirects=True)
+
+    def logout(self):
+        return self.app.get('/logout', follow_redirects=True)
+
+    def test_login_logout(self):
+        rv = self.login('admin', 'admin')
+        assert b'Byl jste úspěšně přihlášen' in rv.data
+        rv = self.logout()
+        assert b'Byli jste odhlášeni' in rv.data
+        rv = self.login('adminx', 'default')
+        assert 'Invalid username' in rv.data
+        rv = self.login('admin', 'defaultx')
+        assert 'Invalid password' in rv.data
 
 if __name__ == '__main__':
     unittest.main()

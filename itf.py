@@ -145,9 +145,9 @@ def add_competitor():
 def delete_member():
     app.logger.info("CALL: _delete_member")
     id = request.args.get('id', 0, type=int)
-    db_old = get_db()
-    cur = db_old.execute('DELETE FROM competitors where itf_id = ?', [id])
-    db_old.commit()
+    member = TeamMembers.query.filter_by(itf_id =id).first()
+    db.session.delete(member)
+    db.session.commit()
     flash('Člen vymazán.')
     return jsonify(1)
 
