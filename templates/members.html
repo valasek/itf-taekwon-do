@@ -4,6 +4,8 @@
     <!-- jQuery library -->
     <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
     <script type=text/javascript>
       $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
     </script>
@@ -35,8 +37,33 @@
     {% if session.logged_in %}
         <script>
             $(document).ready(function () {
-                $('#example').DataTable();
-            });</script>
+                $('#example').dataTable( {
+                   language: {
+                        "sEmptyTable":     "Tabulka neobsahuje žádná data",
+                        "sInfo":           "Zobrazuji _START_ až _END_ z celkem _TOTAL_ záznamů",
+                        "sInfoEmpty":      "Zobrazuji 0 až 0 z 0 záznamů",
+                        "sInfoFiltered":   "(filtrováno z celkem _MAX_ záznamů)",
+                        "sInfoPostFix":    "",
+                        "sInfoThousands":  " ",
+                        "sLengthMenu":     "Zobraz záznamů _MENU_",
+                        "sLoadingRecords": "Načítám...",
+                        "sProcessing":     "Provádím...",
+                        "sSearch":         "Hledat:",
+                        "sZeroRecords":    "Žádné záznamy nebyly nalezeny",
+                        "oPaginate": {
+                            "sFirst":    "První",
+                            "sLast":     "Poslední",
+                            "sNext":     "Další",
+                            "sPrevious": "Předchozí"
+                        },
+                        "oAria": {
+                            "sSortAscending":  ": aktivujte pro řazení sloupce vzestupně",
+                            "sSortDescending": ": aktivujte pro řazení sloupce sestupně"
+                        }
+                    }
+                } );
+            });
+        </script>
         <table id="example" class="table table-striped table-bordered" cellspacing="0" width="100%">
             <thead>
             <tr>

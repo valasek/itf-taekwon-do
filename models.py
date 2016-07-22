@@ -14,7 +14,7 @@ class Sex(db.Model):
         self.sex = sex
 
     def __repr__(self):
-        return '<sex {}>'.format(self.sex)
+        return '{}'.format(self.sex)
 
 
 class Levels(db.Model):
@@ -28,7 +28,7 @@ class Levels(db.Model):
         self.level = level
 
     def __repr__(self):
-        return '<level {}>'.format(self.level)
+        return '{}'.format(self.level)
 
 
 class MemberCompetition(db.Model):
