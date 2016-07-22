@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 # app/models.py
-from itf import db
+#from itf import db
+from flask_sqlalchemy import SQLAlchemy
+from itf import app
 
+db = SQLAlchemy(app)
 
 class Sex(db.Model):
     __tablename__ = "dic_sex"

@@ -12,7 +12,6 @@ import forms
 import os, sqlite3
 from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 # from flask_debugtoolbar import DebugToolbarExtension
-from flask_sqlalchemy import SQLAlchemy
 from config import configure_app
 
 
@@ -28,19 +27,7 @@ app = Flask(__name__,
     instance_relative_config=True)
 
 configure_app(app)
-
-# Load default config and override config from an environment variable
-#app.config.update(dict(
-#    DATABASE=os.path.join(app.root_path, app.config['DATABASE_NAME']),
-#))
-
-db = SQLAlchemy(app)
-from models import MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
-
-# the toolbar is only enabled in debug mode:
-# app.debug = True
-# toolbar = DebugToolbarExtension(app)
-# toolbar.init_app(app)
+from models import db, MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
 
 
 @app.teardown_appcontext
@@ -82,12 +69,14 @@ def show_competitors():
 @app.route('/competition-members')
 def show_competition_members():
     # select data from  DB
-    db_old = get_db()
-    cur = db_old.execute('SELECT * FROM competitors JOIN member_competition ON competitors.id = member_competition.member_id WHERE competition_id = ?', [session['competition_id']])
-    competitors = cur.fetchall()
-    cur = db_old.execute('SELECT * FROM competition WHERE id = ?', [session['competition_id']])
-    competition = cur.fetchall()
-
+    #db_old = get_db()
+    #cur = db_old.execute('SELECT * FROM competitors JOIN member_competition ON competitors.id = member_competition.member_id WHERE competition_id = ?', [session['competition_id']])
+    #competitors = cur.fetchall()
+    #cur = db_old.execute('SELECT * FROM competition WHERE id = ?', [session['competition_id']])
+    #competition = cur.fetchall()
+    competitors = db.session.query(TeamMembers).join(MemberCompetition).filter_by(competition_id = session['competition_id']).all()
+    #    MemberCompetition.query.filter_by(competition_id = session['competition_id'])
+    competition = Competitions.query.filter_by(id = session['competition_id'])
     return render_template('competition-members.html', competitors=competitors, competition=competition[0])
 
 

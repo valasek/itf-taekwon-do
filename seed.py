@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # app/seed.py
 import datetime
-from itf import db
-from models import MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
+# from itf import db
+from models import db, MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
 
 db.drop_all()
 db.create_all()
