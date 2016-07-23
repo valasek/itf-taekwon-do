@@ -14,7 +14,7 @@ script:
   - export FLASK_CONFIGURATION=test
   - python tests.py
   - coverage run tests.py
-  - codeclimate-test-reporter --token [token]
+  - codeclimate-test-reporter --token $TOKEN
 after_success:
   - bash <(curl -s https://codecov.io/bash)
 deploy:
@@ -24,4 +24,4 @@ deploy:
   app: itf
 addons:
   code_climate:
-    repo_token:[token]
+    repo_token:$TOKEN
