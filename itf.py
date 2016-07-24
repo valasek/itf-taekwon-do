@@ -8,9 +8,11 @@
 """
 
 # all the imports
-import forms
-import os, sqlite3
+import os
+
 from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
+
+import forms
 # from flask_debugtoolbar import DebugToolbarExtension
 from config import configure_app
 
@@ -27,22 +29,20 @@ app = Flask(__name__,
     instance_relative_config=True)
 
 configure_app(app)
-from models import db, MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
+from model.models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users
 
 
 @app.teardown_appcontext
 def close_db(exception):
     """Closes the database again at the end of the request."""
     # ToDo: Close SQLAlchemy session/conection
-    #if hasattr(g, 'sqlite_db'):
+    # if hasattr(g, 'sqlite_db'):
     #    g.sqlite_db.close()
 
 
 def init_db():
-    app.logger.debug("init_db started")
     # SQLAlchemy seed
-    import seed
-    app.logger.debug("init_db finished")
+    from model import seed
 
 
 @app.cli.command('initdb')
@@ -68,16 +68,11 @@ def show_competitors():
 
 @app.route('/competition-members')
 def show_competition_members():
-    # select data from  DB
-    #db_old = get_db()
-    #cur = db_old.execute('SELECT * FROM competitors JOIN member_competition ON competitors.id = member_competition.member_id WHERE competition_id = ?', [session['competition_id']])
-    #competitors = cur.fetchall()
-    #cur = db_old.execute('SELECT * FROM competition WHERE id = ?', [session['competition_id']])
-    #competition = cur.fetchall()
-    competitors = db.session.query(TeamMembers).join(MemberCompetition).filter_by(competition_id = session['competition_id']).all()
-    #    MemberCompetition.query.filter_by(competition_id = session['competition_id'])
-    competition = Competitions.query.filter_by(id = session['competition_id'])
-    return render_template('competition-members.html', competitors=competitors, competition=competition[0])
+    competition = Competitions.query.filter_by(id=session['competition_id'])
+    competitors = db.session.query(TeamMembers).join(MemberCompetition).filter(TeamMembers.team_id == session['team_id']).all()
+    competitors_count = len(competitors)
+    total_fee = competitors_count * Competitions.query.first().fee
+    return render_template('competition-members.html', total_fee=total_fee, competitors_count=competitors_count, competitors=competitors, competition=competition[0])
 
 
 @app.route('/edit', methods=['POST', 'GET'])
@@ -88,7 +83,7 @@ def edit_competitor():
     # db_old = get_db()
     # cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
     # member = cur.fetchall()
-    member = db.session.query(Teams.team).join(TeamMembers).filter(TeamMembers.id==session['user_id']).all()
+    member = db.session.query(Teams.team).join(TeamMembers).filter(TeamMembers.id == session['user_id']).all()
 
     return render_template('member.html', member=member)
 
@@ -134,7 +129,7 @@ def add_competitor():
 def delete_member():
     app.logger.info("CALL: _delete_member")
     id = request.args.get('id', 0, type=int)
-    member = TeamMembers.query.filter_by(itf_id =id).first()
+    member = TeamMembers.query.filter_by(itf_id=id).first()
     db.session.delete(member)
     db.session.commit()
     flash('Člen vymazán.')
@@ -158,6 +153,7 @@ def view_competitors():
     app.logger.info("CALL: view_competitors")
     competitors = TeamMembers.query.filter_by(team_id=session['team_id'])
     is_signed_in = {}
+    show_competition_sign_in = None
     for competitor in competitors:
         is_signed = MemberCompetition.query.filter_by(member_id=competitor.id)
         if is_signed.first() != None:
@@ -166,7 +162,10 @@ def view_competitors():
         abort(401)
     if request.method == 'GET':
         show_competition_sign_in = request.args.get('show')
-    return render_template('members.html', competitors=competitors, show_competition_sign_in=show_competition_sign_in, is_signed_in=is_signed_in)
+    return render_template('members.html',
+                           competitors=competitors,
+                           show_competition_sign_in=show_competition_sign_in,
+                           is_signed_in=is_signed_in)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -210,7 +209,12 @@ def register():
         db.session.add(team)
         db.session.commit()
         session['team_id'] = team.id
-        user = Users(form.first_name.data, form.last_name.data, form.email.data, form.password.data, session['team_id'], 0)
+        user = Users(form.first_name.data,
+                     form.last_name.data,
+                     form.email.data,
+                     form.password.data,
+                     session['team_id'],
+                     0)
         db.session.add(user)
         db.session.commit()
         flash('Registrace proběhla úspěšně.')

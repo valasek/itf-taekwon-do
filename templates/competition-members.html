@@ -13,28 +13,29 @@
         <div>
             <div class="row">
                 <div class="col-sm-2"><strong>Místo konání:</strong></div>
-                <div class="col-sm-2">{{ competition.location }}</div>
+                <div class="col-sm-3">{{ competition.location }}</div>
                 <div class="col-sm-2"><strong>Startovné na člena:</strong></div>
-                <div class="col-sm-2">{{competition.fee}}</div>
-                <div class="col-sm-4">&nbsp;</div>
+                <div class="col-sm-2">{{competition.fee}},- Kč</div>
+                <div class="col-sm-3">&nbsp;</div>
             </div>
             <div class="row">
                 <div class="col-sm-2"><strong>Datum konání:</strong></div>
-                <div class="col-sm-2">{{ competition.date }}</div>
-                <div class="col-sm-2"><strong>Celkem přihlášeno:</strong></div>
-                <div class="col-sm-2">XY</div>
+                <div class="col-sm-3">{{ competition.date }}</div>
+                <div class="col-sm-2"><strong>Přihlášeno členů:</strong></div>
+                <div class="col-sm-2">{{competitors_count}}</div>
+                <div class="col-sm-3">&nbsp;</div>
             </div>
             <div class="row">
                 <div class="col-sm-2"><strong>Uzávěrka:</strong></div>
-                <div class="col-sm-2">{{competition.deadline}}</div>
+                <div class="col-sm-3">{{competition.deadline}}</div>
                 <div class="col-sm-2"><strong>Startovné celkem:</strong></div>
-                <div class="col-sm-2">1.600.- Kč</div>
-                <div class="col-sm-4">&nbsp;</div>
+                <div class="col-sm-2">{{total_fee}},- Kč</div>
+                <div class="col-sm-3">&nbsp;</div>
             </div>
             <div class="row">
                 <div class="col-sm-2"><strong>Propozice:</strong></div>
-                <div class="col-sm-2"><a href ="{{competition.instructions_url}}">Propozice</a></div>
-                <div class="col-sm-8">&nbsp;</div>
+                <div class="col-sm-3"><a href ="{{competition.instructions_url}}">Propozice</a></div>
+                <div class="col-sm-7">&nbsp;</div>
             </div>
         </div>
         {% endblock %}

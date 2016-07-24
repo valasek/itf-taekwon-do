@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # app/seed.py
 import datetime
-# from itf import db
-from models import db, MemberCompetition, Matsogi, Tull, Wirok, Tki, TeamMembers, Teams, Competitions, Levels, Sex, Users
+from models import Matsogi, Tull, Wirok, Tki
+from models import db, MemberCompetition, TeamMembers, Teams, Competitions, Levels, Sex, Users
 
 db.drop_all()
 db.create_all()
@@ -13,13 +13,18 @@ db.session.add(Users(u'UserF', u'UserL', u'user', u'user', 2, 0))
 db.session.add(Users(u'Robert', u'Pokorný', u'administrator@taekwondocz.com', u'robert', 1, 1))
 
 # member_competition
-db.session.add(MemberCompetition(1, 2, 3, 4, 5, 6, 1, 1))
+db.session.add(MemberCompetition(1, 1, 3, 4, 5, 6, 1, 1))
 db.session.add(MemberCompetition(2, 1, 3, 4, 5, 6, 1, 1))
-db.session.add(MemberCompetition(3, 2, 3, 4, 5, 6, 0, 0))
-db.session.add(MemberCompetition(4, 1, 3, 4, 5, 6, 0, 0))
+db.session.add(MemberCompetition(13, 1, 3, 4, 5, 6, 0, 0))
+db.session.add(MemberCompetition(14, 1, 3, 4, 5, 6, 0, 0))
 
 # Competitions
-db.session.add(Competitions(u'Světový pohár 2016', u'Budapešť', u'12. října - 16. října 2016', u'30. srpna 2016', u'200.- Kč', 'http://taekwondocz.com/files/PROPOZICE%20MR%202016.pdf', '50.289, 14.830'))
+db.session.add(Competitions(u'Světový pohár 2016', u'Budapešť',
+                            u'12. října - 16. října 2016',
+                            u'30. srpna 2016',
+                            '200',
+                            'http://taekwondocz.com/files/PROPOZICE%20MR%202016.pdf',
+                            '50.289,14.830'))
 
 # Teams
 db.session.add(Teams(u'Sparring'))
