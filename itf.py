@@ -8,7 +8,7 @@
 """
 
 # all the imports
-import os
+import os, datetime
 
 from flask import Flask, jsonify, request, session, g, redirect, url_for, abort, render_template, flash
 
@@ -29,7 +29,7 @@ app = Flask(__name__,
     instance_relative_config=True)
 
 configure_app(app)
-from model.models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users
+from model.models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users, Sex, Levels
 
 
 @app.teardown_appcontext
@@ -60,7 +60,7 @@ def before_request():
 
 
 @app.route('/')
-def show_competitors():
+def show_competitions():
     init_db()
     competition = Competitions.query.all()
     return render_template('competitions.html', competition=competition[0])
@@ -75,22 +75,23 @@ def show_competition_members():
     return render_template('competition-members.html', total_fee=total_fee, competitors_count=competitors_count, competitors=competitors, competition=competition[0])
 
 
-@app.route('/edit', methods=['POST', 'GET'])
-def edit_competitor():
+@app.route('/member/<int:itf_id>', methods=['POST', 'GET'])
+def edit_team_member(itf_id):
+    app.logger.info("Route /member/%s", itf_id)
     if not session.get('logged_in'):
         abort(401)
     # select data from  DB
     # db_old = get_db()
     # cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
     # member = cur.fetchall()
-    member = db.session.query(Teams.team).join(TeamMembers).filter(TeamMembers.id == session['user_id']).all()
-
+    member = TeamMembers.query.filter(TeamMembers.itf_id==itf_id).first()
+    app.logger.info("Leaving /member/%s", itf_id)
     return render_template('member.html', member=member)
 
 
-@app.route('/add', methods=['POST'])
-def add_competitor():
-    app.logger.info('Route: /add')
+@app.route('/member/new', methods=['POST', 'GET'])
+def add_member():
+    app.logger.info('Route: /member/new')
     if not session.get('logged_in'):
         abort(401)
     error = None
@@ -110,19 +111,23 @@ def add_competitor():
         elif not request.form['level']:
             flash('Zadejte úroveň')
         else:
-            db_old = get_db()
-            db_old.execute('INSERT INTO competitors (itf_id, first_name, last_name, birthdate, sex, weight, level, team_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', (
-            request.form['itf_id'], request.form['first_name'], request.form['last_name'], request.form['birthdate'], "Muz", request.form['weight'], request.form['level'], session['team_id']))
-            pass
-            db_old.commit()
+            member = TeamMembers(request.form['itf_id'],
+                                 session['team_id'],
+                                 request.form['first_name'],
+                                 request.form['last_name'],
+                                 request.form['sex'],
+                                 datetime.datetime.strptime(request.form['birthdate'], '%Y-%m-%d').date(),
+                                 request.form['weight'],
+                                 request.form['level'])
+            db.session.add(member)
+            db.session.commit()
             flash('Nový soutěžící úspěšně přidán')
 
-    # select data from  DB
-    db_old = get_db()
-    cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
-    member = cur.fetchall()
-
-    return render_template('member.html', member=member)
+    member = None
+    team = Teams.query.filter_by(id=session['team_id']).first()
+    sex = Sex.query.all()
+    level = Levels.query.all()
+    return render_template('member.html', member=member, team=team, sex=sex, level=level)
 
 
 @app.route('/_delete_member')
@@ -149,8 +154,8 @@ def add_member_to_competition():
 
 
 @app.route('/members', methods=['POST', 'GET'])
-def view_competitors():
-    app.logger.info("CALL: view_competitors")
+def view_members():
+    app.logger.info("CALL: view_members")
     competitors = TeamMembers.query.filter_by(team_id=session['team_id'])
     is_signed_in = {}
     show_competition_sign_in = None
@@ -162,10 +167,12 @@ def view_competitors():
         abort(401)
     if request.method == 'GET':
         show_competition_sign_in = request.args.get('show')
+    team = Teams.query.filter_by(id=session['team_id']).first()
     return render_template('members.html',
                            competitors=competitors,
                            show_competition_sign_in=show_competition_sign_in,
-                           is_signed_in=is_signed_in)
+                           is_signed_in=is_signed_in,
+                           team=team.team)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -186,7 +193,7 @@ def login():
             session['email'] = user.email
             session['team_id'] = user.team_id
             session['competition_id'] = "1"
-            return redirect(url_for('show_competitors'))
+            return redirect(url_for('show_competitions'))
 
     return render_template('login.html', error=error)
 
@@ -197,7 +204,7 @@ def logout():
     session.pop('logged_in', None)
     session.pop('email', None)
     flash('Byli jste odhlášeni')
-    return redirect(url_for('show_competitors'))
+    return redirect(url_for('show_competitions'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -218,8 +225,12 @@ def register():
         db.session.add(user)
         db.session.commit()
         flash('Registrace proběhla úspěšně.')
-        return redirect(url_for('show_competitors'))
+        return redirect(url_for('show_competitions'))
     return render_template('register.html', form=form)
+
+@app.route('/administration', methods=['GET', 'POST'])
+def administration():
+    return render_template('administration.html')
 
 
 if __name__ == "__main__":

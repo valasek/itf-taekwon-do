@@ -1,9 +1,34 @@
 {% extends "layout.html" %}
 {% block title %}Úprava člena{% endblock %}
+{% block head %}
+    <!--  jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+
+    <!-- Isolated Version of Bootstrap, not needed if your site already uses Bootstrap -->
+    <link rel="stylesheet" href="https://formden.com/static/cdn/bootstrap-iso.css" />
+
+    <!-- Bootstrap Date-Picker Plugin -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+    <script>
+        $(document).ready(function(){
+          var date_input=$('input[name="birthdate"]'); //our date input has the name "birthdate"
+          var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+          var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+          };
+          date_input.datepicker(options);
+        })
+    </script>
+{% endblock %}
 {% block page_title %}Úprava člena{% endblock %}
 {% block body %}
 {% if session.logged_in %}
-<form action="{{ url_for('add_competitor') }}" method="post" enctype="multipart/form-data" class=add-competitor>
+<form action="{{ url_for('add_member') }}" method="post" enctype="multipart/form-data">
     <dl>
         <div class="row">
             <div class="col-sm-6"><h4>Osobní informace</h4></div>
@@ -16,7 +41,7 @@
                     <div class="col-sm-6"><strong>ID ITF:</strong></div>
                     </dt>
                     <div class="col-sm-6">
-                        <dd><input type="text" class="form-control" name="itf_id"></dd>
+                        <dd><input type="text" class="form-control" name="itf_id" value="{{member.itf_id}}" autofocus></dd>
                     </div>
                 </div>
                 <div class="row">
@@ -24,7 +49,7 @@
                     <div class="col-sm-6"><strong>Klub:</strong></div>
                     </dt>
                     <div class="col-sm-6">
-                        <dd><input type="text" class="form-control" name="team" value="{{ member[0]['name'] }}"></dd>
+                        <dd><input type="text" class="form-control" name="team" value="{{team.team}}"></dd>
                     </div>
                 </div>
                 <div class="row">
@@ -32,7 +57,7 @@
                     <div class="col-sm-6"><strong>Jméno:</strong></div>
                     </dt>
                     <div class="col-sm-6">
-                        <dd><input type="text" class="form-control" name="first_name">
+                        <dd><input type="text" class="form-control" name="first_name" value="{{member.first_name}}">
                         <dd></dd>
                     </div>
                 </div>
@@ -41,7 +66,7 @@
                     <div class="col-sm-6"><strong>Příjmení:</strong></div>
                     </dt>
                     <div class="col-sm-6">
-                        <dd><input type="text" class="form-control" name="last_name"></dd>
+                        <dd><input type="text" class="form-control" name="last_name" value="{{member.last_name}}"></dd>
                     </div>
                 </div>
                 <div class="row">
@@ -49,7 +74,9 @@
                     <div class="col-sm-6"><strong>Datum narození:</strong></div>
                     </dt>
                     <div class="col-sm-6">
-                        <dd><input type="text" class="form-control" name="birthdate"></dd>
+                        <!-- <dd><input type="date" class="form-control" name="birthdate" value="{{member.birthdate}}"></dd> -->
+                        <dd><input class="form-control" id="date" name="birthdate" placeholder="YYYY-MM-DD" type="text"/>
+                        </dd>
                     </div>
                 </div>
                 <div class="row">
@@ -57,12 +84,11 @@
                     <div class="col-sm-6"><strong>Pohlaví:</strong></div>
                     </dt>
                     <div class="col-sm-6">
-                        <label class="radio-inline">
-                            <dd><input type="radio" name="sex" value="female">&nbsp;Žena&nbsp;</dd>
-                        </label>
-                        <label class="radio-inline">
-                            <dd><input type="radio" name="sex" value="male">&nbsp;Muž&nbsp;</dd>
-                        </label>
+                        <dd><select class="selectpicker" name="sex">
+                            {% for o in sex %}
+                            <option value="{{ o.id }}">{{ o.sex }}</option>
+                            {% endfor %}
+                        </select></dd>
                     </div>
                 </div>
                 <div class="row">
@@ -70,7 +96,7 @@
                     <div class="col-sm-6"><strong>Váha:</strong></div>
                     </dt>
                     <div class="col-sm-6">
-                        <dd><input type="text" class="form-control" name="weight"></dd>
+                        <dd><input type="text" class="form-control" name="weight" value="{{member.weight}}"></dd>
                     </div>
                 </div>
                 <div class="row">
@@ -79,19 +105,16 @@
                     </dt>
                     <div class="col-sm-6">
                         <dd><select class="selectpicker" name="level">
-                            <option>9 kup</option>
-                            <option>8 kup</option>
-                            <option>8 kup</option>
-                            <option>1 DAN</option>
-                            <option>8 DAN</option>
-                            <option>9 DAN</option>
+                            {% for o in level %}
+                            <option value="{{ o.id }}">{{ o.level }}</option>
+                            {% endfor %}
                         </select></dd>
                     </div>
                 </div>
             </div>
             <div class="col-sm-6">
                 <div class="row">
-                    <div class="col-sm-12"><img src="./static/photo.jpg"/></div>
+                    <div class="col-sm-12"><img src="../static/photo.jpg"/></div>
                 </div>
             </div>
         </div>

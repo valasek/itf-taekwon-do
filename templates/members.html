@@ -17,7 +17,11 @@
                   function (data) { $('#'+itf_id).remove(); }
           )
       };
-      function addCompetitors() {
+      function edit_member(itf_id) {
+          alert($SCRIPT_ROOT + '/member/' + itf_id);
+          $.get($SCRIPT_ROOT + '/member/' + itf_id);
+      };
+      function addToCompetition() {
           var ids = [];
           $("input:checkbox:checked").each(function(data){
               var $this=$(this);
@@ -32,7 +36,7 @@
       };
     </script>
 {% endblock %}
-{% block page_title %}Členové{% endblock %}
+{% block page_title %}Členové klubu {{team}}{% endblock %}
 {% block body %}
     {% if session.logged_in %}
         <script>
@@ -95,7 +99,10 @@
                     </div>
                 </td>
                 {% endif %}
-                <td align="center"><button class="glyphicon glyphicon-edit"></button>&nbsp;&nbsp;&nbsp;<button class="glyphicon glyphicon-remove-sign" onclick="delMember({{competitor.itf_id}})"></button></td>
+                <td align="center">
+                    <button class="glyphicon glyphicon-edit" onclick="edit_member({{competitor.itf_id}})"></button>&nbsp;&nbsp;&nbsp;
+                    <button class="glyphicon glyphicon-remove-sign" onclick="delMember({{competitor.itf_id}})"></button>
+                </td>
             </tr>
             {% else %}
             <em>Před nahlášením na soutěž přidejte členy svého klubu.</em>
@@ -104,13 +111,15 @@
         </table>
         <div align="center">
             <br/>
-            <a href="{{ url_for('edit_competitor') }}">
+            <a href="{{url_for("add_member")}}">
                 <button type="button" class="btn btn-info">Přidat člena</button>
             </a>
             {% if show_competition_sign_in %}
-            <button type="button" class="btn btn-info" onclick="addCompetitors()">Přihlásit na soutěž</button>
+            <button type="button" class="btn btn-info" onclick="addToCompetition()">Přihlásit na soutěž</button>
             {% endif %}
         </div>
         <br/><br/><br/>
         {% endif %}
     {% endblock %}
+
+
