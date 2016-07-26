@@ -6,6 +6,11 @@
     <!-- <link rel="stylesheet" href="./../static/bootstrap.min.css"> -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.min.css">
 
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
     <!-- jQuery library -->
     <!-- <script src="static./jquery.min.js"></script> -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
@@ -40,9 +45,16 @@
         {% block nav %}{% endblock %}
     </div>
     <br/><br/>
-    {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-    {% endfor %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert {{ category }}">
+                <a href="#" class="close" data-dismiss="alert">&times;</a>
+                {{ message }}
+            </div>
+            {% endfor %}
+      {% endif %}
+    {% endwith %}
     {% block body %}{% endblock %}
     <br/><br/>
     <footer class="footer">

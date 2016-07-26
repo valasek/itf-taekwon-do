@@ -97,19 +97,19 @@ def add_member():
     error = None
     if request.method == 'POST':
         if not request.form['itf_id']:
-            flash('Zadejte IDT ID')
+            flash('Zadejte ID ITF', 'alert-warning')
         elif not request.form['first_name']:
-            flash('Zadejte jméno')
+            flash('Zadejte jméno', 'alert-warning')
         elif not request.form['last_name']:
-            flash('Zadejte příjmení')
+            flash('Zadejte příjmení', 'alert-warning')
         elif not request.form['birthdate']:
-            flash('Zadejte datum narození')
+            flash('Zadejte datum narození', 'alert-warning')
         # elif not request.form['sex']:
         #    flash('Zadejte pohlaví')
         elif not request.form['weight']:
-            flash('Zadejte váhu')
+            flash('Zadejte váhu', 'alert-warning')
         elif not request.form['level']:
-            flash('Zadejte úroveň')
+            flash('Zadejte úroveň', 'alert-warning')
         else:
             member = TeamMembers(request.form['itf_id'],
                                  session['team_id'],
@@ -121,7 +121,7 @@ def add_member():
                                  request.form['level'])
             db.session.add(member)
             db.session.commit()
-            flash('Nový soutěžící úspěšně přidán')
+            flash('Nový soutěžící úspěšně přidán', 'alert-suscess')
 
     member = None
     team = Teams.query.filter_by(id=session['team_id']).first()
@@ -137,7 +137,7 @@ def delete_member():
     member = TeamMembers.query.filter_by(itf_id=id).first()
     db.session.delete(member)
     db.session.commit()
-    flash('Člen vymazán.')
+    flash('Člen vymazán.', 'alert-success')
     return jsonify(1)
 
 
@@ -186,7 +186,7 @@ def login():
         elif user.pw_hash != request.form['password']:
             error = 'Invalid password'
         else:
-            flash('Byl jste úspěšně přihlášen')
+            flash(u'Byl jste úspěšně přihlášen', 'alert-info')
             session['logged_in'] = True
             session['user_id'] = user.id
             session['is_admin'] = user.is_admin
@@ -203,7 +203,7 @@ def logout():
     """Logs the user out."""
     session.pop('logged_in', None)
     session.pop('email', None)
-    flash('Byli jste odhlášeni')
+    flash('Byli jste odhlášeni', 'alert-info')
     return redirect(url_for('show_competitions'))
 
 
@@ -224,7 +224,7 @@ def register():
                      0)
         db.session.add(user)
         db.session.commit()
-        flash('Registrace proběhla úspěšně.')
+        flash('Registrace proběhla úspěšně.', 'alert-success')
         return redirect(url_for('show_competitions'))
     return render_template('register.html', form=form)
 
