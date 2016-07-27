@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 # app/seed.py
 import datetime
-from models import Matsogi, Tull, Wirok, Tki
-from models import db, MemberCompetition, TeamMembers, Teams, Competitions, Levels, Sex, Users
+from models import Matsogi, Tull, Wirok, Tki, Levels, Sex
+from models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users
 
+# if not database_exists(''):
+#    create_database(db)
 db.drop_all()
 db.create_all()
 

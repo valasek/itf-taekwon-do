@@ -42,6 +42,7 @@ def close_db(exception):
 
 
 def init_db():
+    app.logger.info("Entering init_db")
     # SQLAlchemy seed
     from model import seed
 
@@ -49,6 +50,7 @@ def init_db():
 @app.cli.command('initdb')
 def initdb_command():
     """Initializes the database."""
+    app.logger.info("Entering initdb_command")
     init_db()
     print 'Initialized and seeded the database.'
 
