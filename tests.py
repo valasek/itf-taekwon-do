@@ -59,5 +59,29 @@ class ItfTestCase(unittest.TestCase):
         rv = self.login('admin', 'defaultx')
         assert 'Invalid password' in rv.data
 
+
+    def test_members_status_code(self):
+        rv = self.login('admin', 'admin')
+        result = self.app.get('/members')
+        self.assertEqual(result.status_code, 200)
+
+
+    def test_administration_status_code(self):
+        rv = self.login('admin', 'admin')
+        result = self.app.get('/administration')
+        self.assertEqual(result.status_code, 200)
+
+    def test_competitions_status_code(self):
+        rv = self.login('admin', 'admin')
+        result = self.app.get('/')
+        self.assertEqual(result.status_code, 200)
+
+
+    def test_competition_members_status_code(self):
+        rv = self.login('admin', 'admin')
+        result = self.app.get('/competition-members')
+        self.assertEqual(result.status_code, 200)
+
+
 if __name__ == '__main__':
     unittest.main()
