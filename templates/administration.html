@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}Administrace{% endblock %}
+{% block head %}
+    <!-- jQuery library -->
+    <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css">
+{% endblock %}
+{% block page_title %}Administrace{% endblock %}
+{% block body %}
+    {% if session.logged_in %}
+        <h3>Přidání, přejmenování týmu</h3>
+        <h3>...</h3>
+    {% endif %}
+{% endblock %}
+
+

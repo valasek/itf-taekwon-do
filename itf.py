@@ -30,6 +30,7 @@ app = Flask(__name__,
 
 configure_app(app)
 from model.models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users, Sex, Levels
+from sqlalchemy import func
 
 
 @app.teardown_appcontext
@@ -63,7 +64,8 @@ def before_request():
 def show_competitions():
     init_db()
     competition = Competitions.query.all()
-    return render_template('competitions.html', competition=competition[0])
+    members_in_team = db.session.query(Teams.team, func.count(Teams.id).label('count')).join(TeamMembers).group_by(TeamMembers.team_id).all()
+    return render_template('competitions.html', competition=competition[0], members_in_team=members_in_team)
 
 
 @app.route('/competition-members')

@@ -3,9 +3,9 @@ from setuptools import setup, find_packages
 setup(
     name='ITF',
     version='0.1',
-    description='ITF TaekwonDo competition portal',
+    description='TaekwonDo competition portal',
     long_description=__doc__,
-    url='https://github.com/valasek/itf-taekwondo',
+    url='https://github.com/valasek/taekwondo',
     license='GPL 3.0',
     author='Stanislav Valasek',
     author_email='valasek@gmail.com',

@@ -20,7 +20,7 @@ class ItfTestCase(unittest.TestCase):
 
     def test_home_data(self):
         rv = self.app.get('/')
-        assert b'Soutěž' in rv.data
+        assert b'Taekwondo' in rv.data
 
     def test_home_status_code(self):
         result = self.app.get('/')
