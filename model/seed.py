@@ -17,6 +17,7 @@ db.session.add(MemberCompetition(1, 1, 3, 4, 5, 6, 1, 1))
 db.session.add(MemberCompetition(2, 1, 3, 4, 5, 6, 1, 1))
 db.session.add(MemberCompetition(13, 1, 3, 4, 5, 6, 0, 0))
 db.session.add(MemberCompetition(14, 1, 3, 4, 5, 6, 0, 0))
+db.session.add(MemberCompetition(12, 1, 3, 4, 5, 6, 0, 0))
 
 # Competitions
 db.session.add(Competitions(u'Světový pohár 2016', u'Budapešť',

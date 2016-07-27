@@ -67,13 +67,15 @@
       <tr>
         <th>Klub</th>
         <th>Registrovaných členů</th>
+        <th>Soutěžících</th>
       </tr>
     </thead>
     <tbody>
     {% for team in members_in_team %}
-      <tr>
+        <tr>
         <td>{{team.team}}</td>
-        <td>{{team.count}}</td>
+        <td>{{team.members}}</td>
+        <td>{{enrolled_members[team.id-1].enrolled}}</td>
       </tr>
     {% endfor %}
     </tbody>

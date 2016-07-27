@@ -64,8 +64,9 @@ def before_request():
 def show_competitions():
     init_db()
     competition = Competitions.query.all()
-    members_in_team = db.session.query(Teams.team, func.count(Teams.id).label('count')).join(TeamMembers).group_by(TeamMembers.team_id).all()
-    return render_template('competitions.html', competition=competition[0], members_in_team=members_in_team)
+    members_in_team = db.session.query(Teams.id, Teams.team,func.count(Teams.id).label('members'),).join(TeamMembers).group_by(TeamMembers.team_id).all()
+    enrolled_members = db.session.query(TeamMembers.team_id, func.count(TeamMembers.id).label('enrolled')).join(MemberCompetition).group_by(TeamMembers.team_id).all()
+    return render_template('competitions.html', competition=competition[0], members_in_team=members_in_team, enrolled_members=enrolled_members)
 
 
 @app.route('/competition-members')
@@ -74,7 +75,11 @@ def show_competition_members():
     competitors = db.session.query(TeamMembers).join(MemberCompetition).filter(TeamMembers.team_id == session['team_id']).all()
     competitors_count = len(competitors)
     total_fee = competitors_count * Competitions.query.first().fee
-    return render_template('competition-members.html', total_fee=total_fee, competitors_count=competitors_count, competitors=competitors, competition=competition[0])
+    return render_template('competition-members.html',
+                           total_fee=total_fee,
+                           competitors_count=competitors_count,
+                           competitors=competitors,
+                           competition=competition[0])
 
 
 @app.route('/member/<int:itf_id>', methods=['POST', 'GET'])
