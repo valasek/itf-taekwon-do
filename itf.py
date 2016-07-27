@@ -29,7 +29,7 @@ app = Flask(__name__,
     instance_relative_config=True)
 
 configure_app(app)
-from model.models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users, Sex, Levels
+from model.models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users, Sex, Levels, Tull, Matsogi, Tki, Wirok
 from sqlalchemy import func
 
 
@@ -62,6 +62,7 @@ def before_request():
 
 @app.route('/')
 def show_competitions():
+    app.logger.info("Route /")
     init_db()
     competition = Competitions.query.all()
     members_in_team = db.session.query(Teams.id, Teams.team,func.count(Teams.id).label('members'),).join(TeamMembers).group_by(TeamMembers.team_id).all()
@@ -71,15 +72,28 @@ def show_competitions():
 
 @app.route('/competition-members')
 def show_competition_members():
+    app.logger.info("Route /competition-members")
     competition = Competitions.query.filter_by(id=session['competition_id'])
     competitors = db.session.query(TeamMembers).join(MemberCompetition).filter(TeamMembers.team_id == session['team_id']).all()
     competitors_count = len(competitors)
     total_fee = competitors_count * Competitions.query.first().fee
+    tull_m = Tull.query.filter(Tull.sex_id==1).all()
+    tull_f = Tull.query.filter(Tull.sex_id==2).all()
+    matsogi_m = Matsogi.query.filter(Matsogi.sex_id==1).all()
+    matsogi_f = Matsogi.query.filter(Matsogi.sex_id==2).all()
+    wirok_m = Wirok.query.filter(Wirok.sex_id == 1).all()
+    wirok_f = Wirok.query.filter(Wirok.sex_id == 2).all()
+    tki_m = Tki.query.filter(Tki.sex_id == 1).all()
+    tki_f = Tki.query.filter(Tki.sex_id == 2).all()
     return render_template('competition-members.html',
                            total_fee=total_fee,
                            competitors_count=competitors_count,
                            competitors=competitors,
-                           competition=competition[0])
+                           competition=competition[0],
+                           tull_m=tull_m, tull_f=tull_f,
+                           matsogi_m=matsogi_m, matsogi_f=matsogi_f,
+                           wirok_m=wirok_m, wirok_f=wirok_f,
+                           tki_m=tki_m, tki_f=tki_f)
 
 
 @app.route('/member/<int:itf_id>', methods=['POST', 'GET'])
@@ -98,7 +112,7 @@ def edit_team_member(itf_id):
 
 @app.route('/member/new', methods=['POST', 'GET'])
 def add_member():
-    app.logger.info('Route: /member/new')
+    app.logger.info('Route /member/new')
     if not session.get('logged_in'):
         abort(401)
     error = None
@@ -139,7 +153,7 @@ def add_member():
 
 @app.route('/_delete_member')
 def delete_member():
-    app.logger.info("CALL: _delete_member")
+    app.logger.info("Route _delete_member")
     id = request.args.get('id', 0, type=int)
     member = TeamMembers.query.filter_by(itf_id=id).first()
     db.session.delete(member)
@@ -150,8 +164,9 @@ def delete_member():
 
 @app.route('/_add_to_competition')
 def add_member_to_competition():
-    app.logger.info("CALL: _add_to_competition")
+    app.logger.info("Route _add_to_competition")
     dict = request.args.getlist("id[]")
+
     app.logger.info(dict)
     db_old = get_db()
     for id in dict:
@@ -162,7 +177,7 @@ def add_member_to_competition():
 
 @app.route('/members', methods=['POST', 'GET'])
 def view_members():
-    app.logger.info("CALL: view_members")
+    app.logger.info("Route /members")
     competitors = TeamMembers.query.filter_by(team_id=session['team_id'])
     is_signed_in = {}
     show_competition_sign_in = None
@@ -184,6 +199,7 @@ def view_members():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    app.logger.info("Route /login")
     """Logs the user in."""
     error = None
     if request.method == 'POST':
@@ -207,6 +223,7 @@ def login():
 
 @app.route('/logout')
 def logout():
+    app.logger.info("Route /logout")
     """Logs the user out."""
     session.pop('logged_in', None)
     session.pop('email', None)
@@ -216,7 +233,7 @@ def logout():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    app.logger.info('Route: /register')
+    app.logger.info('Route /register')
     form = forms.RegistrationForm(request.form)
     if request.method == 'POST' and form.validate():
         team = Teams(form.team.data)
@@ -237,6 +254,7 @@ def register():
 
 @app.route('/administration', methods=['GET', 'POST'])
 def administration():
+    app.logger.info("Route /administration")
     return render_template('administration.html')
 
 

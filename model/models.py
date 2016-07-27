@@ -47,6 +47,10 @@ class MemberCompetition(db.Model):
     tki_id = db.Column(db.Integer, db.ForeignKey('dic_tki.id'))
     trainee = db.Column(db.Boolean)
     coach = db.Column(db.Boolean)
+    tull = db.relationship('Tull', backref=db.backref('dic_tull', lazy='joined'))
+    matsogi = db.relationship('Matsogi', backref=db.backref('dic_matsogi', lazy='joined'))
+    wirok = db.relationship('Wirok', backref=db.backref('dic_wirok', lazy='joined'))
+    tki = db.relationship('Tki', backref=db.backref('dic_tki', lazy='joined'))
 
     def __init__(self, member_id, competition_id, matsogi_id, tull_id, wirok_id, tki_id, trainee, coach):
         self.member_id = member_id
@@ -68,11 +72,11 @@ class Matsogi(db.Model):
     # Columns
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     matsogi = db.Column(db.String(50))
-    sex = db.Column(db.String, db.ForeignKey('dic_sex.id'))
+    sex_id = db.Column(db.Integer, db.ForeignKey('dic_sex.id'))
 
-    def __init__(self, matsogi, sex):
+    def __init__(self, matsogi, sex_id):
         self.matsogi = matsogi
-        self.sex = sex
+        self.sex_id = sex_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -84,11 +88,11 @@ class Tull(db.Model):
     # Columns
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     tull = db.Column(db.String(50))
-    sex = db.Column(db.String, db.ForeignKey('dic_sex.id'))
+    sex_id = db.Column(db.Integer, db.ForeignKey('dic_sex.id'))
 
-    def __init__(self, tull, sex):
+    def __init__(self, tull, sex_id):
         self.tull = tull
-        self.sex = sex
+        self.sex_id = sex_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -100,11 +104,11 @@ class Wirok(db.Model):
     # Columns
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     wirok = db.Column(db.String(50))
-    sex = db.Column(db.String, db.ForeignKey('dic_sex.id'))
+    sex_id = db.Column(db.Integer, db.ForeignKey('dic_sex.id'))
 
-    def __init__(self, wirok, sex):
+    def __init__(self, wirok, sex_id):
         self.wirok = wirok
-        self.sex = sex
+        self.sex_id = sex_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -116,11 +120,11 @@ class Tki(db.Model):
     # Columns
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     tki = db.Column(db.String(50))
-    sex = db.Column(db.String, db.ForeignKey('dic_sex.id'))
+    sex_id = db.Column(db.Integer, db.ForeignKey('dic_sex.id'))
 
-    def __init__(self, tki, sex):
+    def __init__(self, tki, sex_id):
         self.tki = tki
-        self.sex = sex
+        self.sex_id = sex_id
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -135,12 +139,13 @@ class TeamMembers(db.Model):
     team_id = db.Column(db.Integer, db.ForeignKey('teams.id'))
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
-    sex_id = db.Column(db.String, db.ForeignKey('dic_sex.id'))
+    sex_id = db.Column(db.Integer, db.ForeignKey('dic_sex.id'))
     birthdate = db.Column(db.Date)
     weight = db.Column(db.Integer)
     level_id = db.Column(db.Integer, db.ForeignKey('dic_levels.id'))
     level = db.relationship('Levels', backref=db.backref('team_members', lazy='joined'))
     sex = db.relationship('Sex', backref=db.backref('team_members', lazy='joined'))
+    team = db.relationship('Teams', backref=db.backref('teams', lazy='joined'))
 
     def __init__(self, itf_id, team_id, first_name, last_name, sex_id, birthdate, weight, level_id):
         self.itf_id = itf_id

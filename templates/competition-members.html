@@ -92,25 +92,52 @@
                     <td>{{competitor.itf_id}}</td>
                     <td>{{competitor.first_name}}</td>
                     <td>{{competitor.last_name}}</td>
-                    <td><select class="selectpicker">
-                        <option>1 - 3 kup</option>
-                        <option>4 - 6 kup</option>
-                        <option>7 - 9 kup</option>
+                    <td><select class="selectpicker" name="tull">
+                            {% if competitor.sex_id == 1 %}
+                                {% for o in tull_m %}
+                                <option value="{{ o.id }}">{{ o.tull }}</option>
+                                {% endfor %}
+                            {% elif competitor.sex_id == 2 %}
+                                {% for o in tull_f %}
+                                <option value="{{ o.id }}">{{ o.tull }}</option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </td>
-                    <td><select class="selectpicker">
-                            <option>51 - 60 Kg</option>
-                            <option>61 - 70 Kg</option>
+                    <td><select class="selectpicker" name="matsogi">
+                            {% if competitor.sex_id == 1 %}
+                                {% for o in matsogi_m %}
+                                <option value="{{ o.id }}">{{ o.matsogi }}</option>
+                                {% endfor %}
+                            {% elif competitor.sex_id == 2 %}
+                                {% for o in matsogi_f %}
+                                <option value="{{ o.id }}">{{ o.matsogi }}</option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                     </td>
-                    <td><select class="selectpicker">
-                                <option>Hodnota 1</option>
-                                <option>Hodnota 2</option>
+                    <td><select class="selectpicker" name="tki">
+                            {% if competitor.sex_id == 1 %}
+                                {% for o in tki_m %}
+                                <option value="{{ o.id }}">{{ o.tki }}</option>
+                                {% endfor %}
+                            {% elif competitor.sex_id == 2 %}
+                                {% for o in tki_f %}
+                                <option value="{{ o.id }}">{{ o.tki }}</option>
+                                {% endfor %}
+                            {% endif %}
                             </select>
                     </td>
-                    <td><select class="selectpicker">
-                                <option>Hodnota 1</option>
-                                <option>Hodnota 2</option>
+                    <td><select class="selectpicker" name="wirok">
+                            {% if competitor.sex_id == 1 %}
+                                {% for o in wirok_m %}
+                                <option value="{{ o.id }}">{{ o.wirok }}</option>
+                                {% endfor %}
+                            {% elif competitor.sex_id == 2 %}
+                                {% for o in wirok_f %}
+                                <option value="{{ o.id }}">{{ o.wirok }}</option>
+                                {% endfor %}
+                            {% endif %}
                             </select>
                     </td>
                     <td><select class="selectpicker">
