@@ -55,9 +55,9 @@ class ItfTestCase(unittest.TestCase):
         rv = self.logout()
         assert b'Byli jste odhlášeni' in rv.data
         rv = self.login('adminx', 'default')
-        assert 'Invalid username' in rv.data
+        assert 'Nesprávny email' in rv.data
         rv = self.login('admin', 'defaultx')
-        assert 'Invalid password' in rv.data
+        assert 'Nesprávne heslo' in rv.data
 
 
     def test_members_status_code(self):

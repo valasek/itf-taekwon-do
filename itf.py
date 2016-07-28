@@ -77,10 +77,10 @@ def show_competition_members():
     competitors = db.session.query(TeamMembers).join(MemberCompetition).filter(TeamMembers.team_id == session['team_id']).all()
     competitors_count = len(competitors)
     total_fee = competitors_count * Competitions.query.first().fee
-    tull_m = Tull.query.filter(Tull.sex_id==1).all()
-    tull_f = Tull.query.filter(Tull.sex_id==2).all()
-    matsogi_m = Matsogi.query.filter(Matsogi.sex_id==1).all()
-    matsogi_f = Matsogi.query.filter(Matsogi.sex_id==2).all()
+    tull_m = Tull.query.filter(Tull.sex_id == 1).all()
+    tull_f = Tull.query.filter(Tull.sex_id == 2).all()
+    matsogi_m = Matsogi.query.filter(Matsogi.sex_id == 1).all()
+    matsogi_f = Matsogi.query.filter(Matsogi.sex_id == 2).all()
     wirok_m = Wirok.query.filter(Wirok.sex_id == 1).all()
     wirok_f = Wirok.query.filter(Wirok.sex_id == 2).all()
     tki_m = Tki.query.filter(Tki.sex_id == 1).all()
@@ -105,7 +105,7 @@ def edit_team_member(itf_id):
     # db_old = get_db()
     # cur = db_old.execute('SELECT teams.name FROM teams INNER JOIN users ON users.team_id = teams.id WHERE users.id= ?', [session['user_id']])
     # member = cur.fetchall()
-    member = TeamMembers.query.filter(TeamMembers.itf_id==itf_id).first()
+    member = TeamMembers.query.filter(TeamMembers.itf_id == itf_id).first()
     app.logger.info("Leaving /member/%s", itf_id)
     return render_template('member.html', member=member)
 
@@ -217,7 +217,6 @@ def login():
             session['team_id'] = user.team_id
             session['competition_id'] = "1"
             return redirect(url_for('show_competitions'))
-
     return render_template('login.html', error=error)
 
 
@@ -251,6 +250,7 @@ def register():
         flash('Registrace proběhla úspěšně.', 'alert-success')
         return redirect(url_for('show_competitions'))
     return render_template('register.html', form=form)
+
 
 @app.route('/administration', methods=['GET', 'POST'])
 def administration():
