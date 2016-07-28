@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, datetime
 import itf
 import unittest
 import tempfile
@@ -10,6 +10,7 @@ class ItfTestCase(unittest.TestCase):
     def setUp(self):
         self.db_fd, itf.app.config['DATABASE'] = tempfile.mkstemp()
         itf.app.config['TESTING'] = True
+        itf.app.config['WTF_CSRF_ENABLED'] = False
         self.app = itf.app.test_client()
         with itf.app.app_context():
             itf.init_db()
@@ -47,41 +48,60 @@ class ItfTestCase(unittest.TestCase):
 
     def test_register(self):
         rv = self.register('Test tým', 'Jméno', 'Příjmení', 'email@email.com', 'password', 'password')
-        assert b'Registrace proběhla úspěšně.' in rv.data
+        assert u'Registrace proběhla úspěšně.' in rv.data
+
+    def new_member(self, itf_id, team_id, first_name, last_name, sex, birthdate, weight, level):
+        return self.app.post('/member/new', data=dict(
+            itf_id=itf_id,
+            team_id=team_id,
+            first_name=first_name,
+            last_name=last_name,
+            sex=sex,
+            birthdate=birthdate,
+            weight=weight,
+            level=level
+        ), follow_redirects=True)
+
+    def test_new_member(self):
+        self.login('admin', 'admin')
+        rv = self.new_member(1234, 1, u'Stano', u'Valasek', 1, datetime.date(2013, 3, 25), 80, 1)
+        assert u'Nový soutěžící úspěšně přidán' in rv.data
 
     def test_login_logout(self):
         rv = self.login('admin', 'admin')
-        assert b'Byl jste úspěšně přihlášen' in rv.data
+        assert u'Byl jste úspěšně přihlášen' in rv.data
         rv = self.logout()
-        assert b'Byli jste odhlášeni' in rv.data
+        assert u'Byli jste odhlášeni' in rv.data
         rv = self.login('adminx', 'default')
-        assert 'Nesprávny email' in rv.data
+        assert u'Nesprávny email' in rv.data
         rv = self.login('admin', 'defaultx')
-        assert 'Nesprávne heslo' in rv.data
+        assert u'Nesprávne heslo' in rv.data
 
-
-    def test_members_status_code(self):
-        rv = self.login('admin', 'admin')
-        result = self.app.get('/members')
+    def test_new_member_status_code(self):
+        self.login('admin', 'admin')
+        result = self.app.get('/member/new')
         self.assertEqual(result.status_code, 200)
 
 
+    def test_members_status_code(self):
+        self.login('admin', 'admin')
+        result = self.app.get('/members')
+        self.assertEqual(result.status_code, 200)
+
     def test_administration_status_code(self):
-        rv = self.login('admin', 'admin')
+        self.login('admin', 'admin')
         result = self.app.get('/administration')
         self.assertEqual(result.status_code, 200)
 
     def test_competitions_status_code(self):
-        rv = self.login('admin', 'admin')
+        self.login('admin', 'admin')
         result = self.app.get('/')
         self.assertEqual(result.status_code, 200)
 
-
     def test_competition_members_status_code(self):
-        rv = self.login('admin', 'admin')
+        self.login('admin', 'admin')
         result = self.app.get('/competition-members')
         self.assertEqual(result.status_code, 200)
-
 
 if __name__ == '__main__':
     unittest.main()
