@@ -205,9 +205,9 @@ def login():
     if request.method == 'POST':
         user = Users.query.filter_by(email=request.form['email']).first()
         if user is None:
-            error = 'Invalid username'
+            error = 'Nesprávny email'
         elif user.pw_hash != request.form['password']:
-            error = 'Invalid password'
+            error = 'Nesprávne heslo'
         else:
             flash(u'Byl jste úspěšně přihlášen', 'alert-info')
             session['logged_in'] = True

@@ -11,7 +11,7 @@ install:
   - pip install -q -r requirements.txt
   - pip install -q -e .
 script:
-  - export FLASK_CONFIGURATION=default
+  - export FLASK_CONFIGURATION=dev
   - python tests.py
   - coverage run tests.py
   - codeclimate-test-reporter --token $TOKEN
