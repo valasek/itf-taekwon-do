@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-    ITF competition
+    Taekwondo competition portal
     ~~~~~~~~
-    ITF competition portal is written in Flask and sqlite3.
+    Taekwondo competition portal is written in Flask and using sqlite3 as a storage.
     :copyright: (c) 2016 by Stanislav Valášek, valasek@gmail.com.
     :license: GPL v3, see LICENSE for more details.
 """
@@ -32,7 +32,6 @@ configure_app(app)
 from model.models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users, Sex, Levels, Tull, Matsogi, Tki, Wirok
 from sqlalchemy import func
 
-
 @app.teardown_appcontext
 def close_db(exception):
     """Closes the database again at the end of the request."""
@@ -55,17 +54,16 @@ def initdb_command():
     print 'Initialized and seeded the database.'
 
 
-@app.before_request
-def before_request():
-    g.user = None
-    if 'email' in session:
-        g.user = Users.query.filter_by(email=session['email']).first()
+# @app.before_request
+# def before_request():
+#     g.user = None
+#     if 'email' in session:
+#       g.user = Users.query.filter_by(email=session['email']).first()
 
 
 @app.route('/')
 def show_competitions():
     app.logger.info("Route /")
-    init_db()
     competition = Competitions.query.all()
     members_in_team = db.session.query(Teams.id, Teams.team,func.count(Teams.id).label('members'),).join(TeamMembers).group_by(TeamMembers.team_id).all()
     enrolled_members = db.session.query(TeamMembers.team_id, func.count(TeamMembers.id).label('enrolled')).join(MemberCompetition).group_by(TeamMembers.team_id).all()

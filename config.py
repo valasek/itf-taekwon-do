@@ -24,7 +24,7 @@ class TestingConfig(BaseConfig):
 config = {
     "dev": "config.DevelopmentConfig",
     "test": "config.TestingConfig",
-    "default": "config.DevelopmentConfig"
+    "default": "config.BaseConfig"
 }
 
 

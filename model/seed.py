@@ -3,9 +3,9 @@
 import datetime
 from models import Matsogi, Tull, Wirok, Tki, Levels, Sex
 from models import db, MemberCompetition, TeamMembers, Teams, Competitions, Users
+from itf import app
 
-# if not database_exists(''):
-#    create_database(db)
+app.logger.info('Entering seed.py')
 db.drop_all()
 db.create_all()
 
