@@ -3,13 +3,15 @@
 
 Manage Taekwondo teams, competitors and competitions. Web based portal allows you to register competitor to particular competition.
 
+This code is not finished and maintained anymore.
+__Visit [Taekwondo](https://github.com/valasek/taekwondo) for latest version.__
+ 
+
 ---
 
-__Try demo__ at https://itf.herokuapp.com/
+Try demo at https://itf.herokuapp.com/
 
 Credentials: admin/admin or user/user
-
-*Version is not complete and supports only CZ language*
 
 ---
 
