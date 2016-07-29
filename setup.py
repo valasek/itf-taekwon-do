@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='ITF',
+    name='Taekwondo',
     version='0.1',
     description='TaekwonDo competition portal',
     long_description=__doc__,
-    url='https://github.com/valasek/taekwondo',
+    url='https://github.com/valasek/taekwondo-flask',
     license='GPL 3.0',
     author='Stanislav Valasek',
     author_email='valasek@gmail.com',
